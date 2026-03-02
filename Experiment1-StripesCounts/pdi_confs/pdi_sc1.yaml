@@ -199,7 +199,7 @@ plugins:
               start: [ '$local_fdistribu_starts[0]', '$local_fdistribu_starts[1]', '$local_fdistribu_starts[2]', '$local_fdistribu_starts[3]', '$local_fdistribu_starts[4]', '$local_fdistribu_starts[5]' ]
 
     #-- Write timing (as table: names and values arrays)
-    - file: '/beegfs/lgouveia/ior_1/cpu_time.h5'
+    - file: '/beegfs/aloupoue/ost_1/cpu_time.h5'
       on_event: [write_timing]
       collision_policy: replace_and_warn
       write:
@@ -207,7 +207,7 @@ plugins:
         timing_values: ~
         
     #-- Write distribution function and coordinates
-    - file: '/beegfs/lgouveia/ior_1/fdistribu_5D_output.h5'
+    - file: '/beegfs/aloupoue/ost_1/fdistribu_5D_output.h5'
       on_event: [write_fdistribu]
       collision_policy: replace_and_warn
       communicator: $MPI_COMM_WORLD
@@ -228,7 +228,7 @@ plugins:
               start: [ '$local_fdistribu_starts[0]', '$local_fdistribu_starts[1]', '$local_fdistribu_starts[2]', '$local_fdistribu_starts[3]', '$local_fdistribu_starts[4]', '$local_fdistribu_starts[5]' ]
 
     #-- Write fluid moments
-    - file: '/beegfs/lgouveia/ior_1/fluid_moments.h5'
+    - file: '/beegfs/aloupoue/ost_1/fluid_moments.h5'
       on_event: [write_fluid_moments]
       collision_policy: replace_and_warn
       write:

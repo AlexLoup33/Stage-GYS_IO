@@ -4,7 +4,7 @@
 benchmark:
   name: "Gys_io Benchmark - Stripe Count Study"
   workdir: "/beegfs/aloupoue/iops_runs"
-  repetitions: 3
+  repetitions: 5
   search_method: "exhaustive"
   executor: "slurm"
   cache_file: "/beegfs/aloupoue/iops_cache.db"
@@ -49,7 +49,7 @@ scripts:
 
       cd /beegfs/aloupoue/
 
-      module load mpi/openmpi/4.0.1
+      module load mpi/openmpi/4.5.1
 
       guix time-machine -C /beegfs/aloupoue/gyselalibxx_devel.scm -- \
         shell -m /beegfs/aloupoue/manifest.scm -- \
@@ -84,7 +84,7 @@ scripts:
           return {
             "time_write": time_write,
             "time_total": time_total,
-            "bandwidth":  * 1024 * 1024 / time_write if time_write else None
+            "bandwidth": 58686709176 * 1024 * 1024 / time_write if time_write else None
           }
 
 
