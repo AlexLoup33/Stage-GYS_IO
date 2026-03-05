@@ -49,11 +49,10 @@ scripts:
 
       cd /beegfs/aloupoue/
 
-      module load mpi/openmpi/4.5.1
 
       guix time-machine -C /beegfs/aloupoue/gyselalibxx_devel.scm -- \
         shell -m /beegfs/aloupoue/manifest.scm -- \
-        mpirun -n $SLURM_NTASKS {{ command.template }} >> {{ execution_dir }}/slurm.out >&1
+        srun -n $SLURM_NTASKS {{ command.template }} >> {{ execution_dir }}/slurm.out >&1
       
     parser:
       file: "{{ execution_dir }}/slurm.out"
@@ -84,7 +83,7 @@ scripts:
           return {
             "time_write": time_write,
             "time_total": time_total,
-            "bandwidth": (58686709176 * 1024 * 1024) / time_write if time_write else None
+            "bandwidth": round(58686709176 / (1024 * 1024) / time_write, 2) if time_write else None
           }
 
 
