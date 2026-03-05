@@ -84,7 +84,7 @@ scripts:
           return {
             "time_write": time_write,
             "time_total": time_total,
-            "bandwidth": 58686709176 * 1024 * 1024 / time_write if time_write else None
+            "bandwidth": (58686709176 * 1024 * 1024) / time_write if time_write else None
           }
 
 
