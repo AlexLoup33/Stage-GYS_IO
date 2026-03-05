@@ -96,7 +96,7 @@ scripts:
       #SBATCH --nodes=8
       #SBATCH --ntasks-per-node=8
       ...
-      mpirun -n $SLURM_NTASKS {{ command.template }}
+      srun -n $SLURM_NTASKS {{ command.template }}
     parser:
       file: "{{ execution_dir }}/slurm.out"
       parser_script: |
