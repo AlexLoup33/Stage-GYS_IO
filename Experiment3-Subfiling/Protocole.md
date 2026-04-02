@@ -219,18 +219,7 @@ Exécution :
 ```bash
 salloc -n 64 -C bora --exclusive
 
-srun -n 64 -C bora --exclusive ~/gysela-mini-app_io/build/apps/gys_io /beegfs/aloupoue/gys_io.yaml /beegfs/aloupoue/pdi_scX.yaml
+source path/to/env_sub.sh # Charger les variables d'environnement et modules nécessaires pour l'exécution de Gysela
+
+mpirun -np 64 --map-by ppr:32:node path/to/gys_io path/to/<gys_io_config_file>.yaml path/to/<pdi_config_file>.yaml
 ```
-
-
-
-A faire : 
-
-- Finir compil Gysela au propre (en passant par Bora pour la compil)
-- Exp subfiling (avec stripe size en multiple de 4MB)
-- Tester sur OST_8
-- Lancer TOTO avec subfiling pour vérifier la variable d'aggregateur.
-
-
-- Demander accès à Adastra / Irène
--> faire reset la machine par la DSI
