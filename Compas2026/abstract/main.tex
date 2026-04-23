@@ -1,0 +1,47 @@
+%===========================================================
+%                              Choix de thématique
+%===========================================================
+% Une des trois options 'parallelisme', 'architecture', 'systeme' 
+% doit être utilisée avec le style compas2026
+\documentclass[systeme]{compas2026}
+
+%===========================================================
+%                               Title
+%===========================================================
+
+\toappear{1} % Conserver cette ligne pour la version finale
+
+\begin{document}
+
+\title{Amélioration des performances I/O de l'application Gysela}
+\shorttitle{}
+
+\author{Alexandre Lou-Poueyou \thanks{Travail encadré par Méline Trochon, Francieli Boito et Luan Teylo, du Centre Inria de l'Université de Bordeaux, en collaboration avec Virginie Grandgirard, Philipp Krah et Ariel De Vora, du CEA.}}%
+
+\address{Université de Bordeaux,\\
+Centre INRIA de l'université de Bordeaux - 200 Av. de la Vieille Tour\\
+33400 Talence - France\\
+alexandre.lou-poueyou@inria.fr}
+
+\date{\today}
+
+\maketitle
+
+%===========================================================         %
+%R\'esum\'e
+%===========================================================  
+\begin{abstract}
+Dans les systèmes de calcul haute performance (HPC) modernes, les performances d’entrées/ sorties (I/O) constituent souvent un facteur limitant pour les simulations scientifiques à grande échelle. Alors que la puissance des supercalculateurs et les volumes de données continuent d’augmenter, l’optimisation des performances I/O devient essentielle afin d’exploiter efficacement les ressources disponibles \cite{boito2025hdr}.
+Dans ce contexte, les applications scientifiques reposent largement sur des systèmes de fichiers parallèles (PFS) permettant d’accéder simultanément à de grandes quantités de données. Toutefois, les performances obtenues dépendent fortement de nombreux paramètres de configuration ainsi que des motifs d’accès aux données utilisés par les applications. Comprendre et optimiser ces interactions constitue donc un enjeu important pour améliorer l’efficacité globale des simulations HPC.\\
+Ce travail s’inscrit dans le cadre de l’optimisation des performances I/O de l’application Gysela, un code de simulation développé pour l’étude de la turbulence plasma dans les tokamaks, dans le domaine de la fusion nucléaire. Ces simulations produisent de grandes quantités de données et nécessitent l’écriture régulière de checkpoints, qui permettent de sauvegarder l’état de la simulation afin de pouvoir la reprendre en cas d’interruption, qu’elle soit due à une panne matérielle ou à une limitation du temps d’exécution alloué sur les supercalculateurs.\\
+L’objectif de ce travail est d’analyser et d’améliorer les performances des opérations d’écriture de ces checkpoints \cite{trochon2025checkpointing}. Pour cela, plusieurs campagnes d’expérimentations ont été menées à l’aide du mini-applicatif gys\_io \cite{gysela_miniapp_io}, une version simplifiée de l’I/O de Gysela permettant de reproduire les schémas d’accès aux données du code réel.
+Les expériences consistent notamment à étudier l’impact de différents paramètres du système de fichiers sur les performances d’écriture. Les résultats obtenus permettent d’identifier les configurations les plus performantes et de mieux comprendre l’influence de ces paramètres sur le comportement I/O de l’application. À terme, ces analyses visent à proposer des recommandations d’optimisation afin d’améliorer les performances I/O des simulations Gysela sur les infrastructures HPC.\\
+  \MotsCles{HPC, Parallel I/O, checkpointing.}
+\end{abstract}
+
+\bibliography{bibliographie}
+
+\end{document}
+
+
+
