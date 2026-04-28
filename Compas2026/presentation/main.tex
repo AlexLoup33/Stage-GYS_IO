@@ -1,0 +1,196 @@
+\documentclass[A4,svgnames,9pt,aspectratio=169]{beamer}
+%% document options:
+%% - aspectratio = { 43, 169, 1610 }
+%% - utf8
+%%
+
+%%
+%% insert list of packages
+%%
+
+%% \usepackage[english,french]{babel}
+
+\hypersetup{
+   allcolors=rouge_inria,
+   pdfauthor   = {firstname lastname},
+   pdftitle    = {\@title},
+   pdfsubject  = {Resum\'{e} of everything},
+   pdfkeywords = {firstname~lastname, curriculum vit\ae{}}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title[titrecourt]{Amélioration des performances I/O de Gysela}
+\subtitle{Stage de M1, 2026}
+\date[00/07/2026]{date long}
+\author[A. et al.]{Alexandre Lou-Poueyou}
+
+\usetheme{inria}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\frame{\titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Le titre des planches de sommaire est \contentsname, sa valeur
+% est fixée ici à "Sommaire" par défaut.
+\renewcommand{\contentsname}{Sommaire}
+
+% Si le package babel est utilisé la valeur
+% prend celle par défaut de la langue sélectionnée.
+% Pour imposer une valeur, y compris lors de l'utilisation de
+% babel, faire attention à redéfinir cette variable _après_
+% un \selectlanguage{}
+
+% \selectlanguage{french}
+% \selectlanguage{english}
+
+\frame{\tocpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\section{Introduction}
+\frame{\sectionpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Présentation Gysela}
+  \begin{block}{Gysela}
+    \begin{itemize}
+      \item Code de simulation de turbulence dans les plasmas de fusion.
+      \item Modèle de Vlasov gyro-kinétique 5D.
+      \item C++/Fortran.
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Problématique}
+    \begin{itemize}
+      \item Checkpoint régulier nécessaire pour éviter la perte de données en cas de crash.
+      \item Bloque la simulation pendant l'écriture.
+      \item Objectif : réduire le temps d'écriture.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\subsection{Section x.x}
+
+\begin{frame}{Problématique I/O}
+  \begin{block}{Checkpointing}
+    \begin{itemize}
+      \item Grosse simulation nécessitant beaucoup de nœuds de calcul.
+      \item Checkpoint régulier pour éviter la perte de données.
+      \item Bloque la simulation pendant l'écriture.
+    \end{itemize}
+  \end{block}
+  \footnote{checkpoint: sauvegarde l'état de la simulation}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Titre du chapitre 2}
+\frame{\sectionpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Mise en page sur 2 colonnes}
+  \begin{columns}
+      
+      \begin{column}[t]{0.45\textwidth}
+          \begin{center}
+          \includegraphics[width=0.95\textwidth]{imgs/photo.png}      
+          \end{center}
+      \end{column}
+        
+    \begin{column}[t]{0.45\textwidth}
+
+           \begin{block}{Premier niveau de liste (Titre)}
+           Deuxième niveau de liste (Texte courant).
+             \begin{itemize}
+               \item Troisième niveau de liste (Puce 1).
+                   \begin{itemize}
+                     \item Quatrième niveau de liste (Puce 2).
+                        \begin{itemize}
+                           \item Cinquième niveau de liste (Puce 3).
+                        \end{itemize}
+                   \end{itemize}
+             \end{itemize}
+           \end{block}
+
+           \begin{block}{Premier niveau de liste (Titre)}
+           Deuxième niveau de liste (Texte courant).
+             \begin{itemize}
+               \item Troisième niveau de liste (Puce 1).
+                   \begin{itemize}
+                     \item Quatrième niveau de liste (Puce 2).
+                   \end{itemize}
+             \end{itemize}
+           \end{block}
+
+         \end{column}
+         
+  \end{columns}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Titre du chapitre 3}
+\frame{\sectionpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Deux autres exemples de blocs}
+    \begin{exampleblock}{}
+      \begin{itemize}
+        \item{Item 1 }
+        \item {Item 2}
+        \item {Item 3}
+      \end{itemize}
+    \end{exampleblock}
+    \begin{exampleblock}{Avec titre}
+      \begin{itemize}
+        \item{Item 1 }
+        \item {Item 2}
+        \item {Item 3}
+      \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+\section{Conclusion}
+\begin{frame}{Conclusion}
+
+    {\tiny         The quick brown fox jumps over the lazy dog}\\
+    {\scriptsize   The quick brown fox jumps over the lazy dog}\\
+    {\footnotesize The quick brown fox jumps over the lazy dog}\\
+    {\small        The quick brown fox jumps over the lazy dog}\\
+    {\normalsize   The quick brown fox jumps over the lazy dog}\\
+    {\large        The quick brown fox jumps over the lazy dog}\\
+    {\Large        The quick brown fox jumps over the lazy dog}\\
+    {\LARGE        The quick brown fox jumps over the lazy dog}\\
+    {\huge         The quick brown fox jumps over the lazy dog}\\
+    {\Huge         The quick brown fox jumps over the lazy dog}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Le texte est modifiable en changeant \thankyou
+%% \renewcommand{\thankyou}{Thank You.}
+\frame{\merci}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
