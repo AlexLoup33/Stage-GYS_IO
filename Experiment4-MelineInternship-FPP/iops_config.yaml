@@ -1,0 +1,95 @@
+# =============================================================================
+# IOPS Configuration - Gys_io (Gysela Benchmark)
+# =============================================================================
+benchmark:
+  name: "Gys_io Benchmark - Subfiling"
+  workdir: "/beegfs/aloupoue/iops_runs"
+  repetitions: 5
+  search_method: "exhaustive"
+  executor: "slurm"
+  cache_file: "/beegfs/aloupoue/iops_cache.db"
+  probes:
+    resource_sampling: true
+    sampling_interval: 1
+
+vars:
+  nodes:
+    type: int
+    sweep:
+      mode: list
+      values: [2, 4, 8, 16]
+    
+  tasks_per_node:
+    type: int
+    sweep:
+      mode: list
+      values: [4, 8, 16, 32]
+
+  gys_io_output:
+    type: str
+    expr: "{{ execution_dir }}/summary.txt"
+
+command:
+  template: "~/gysela-mini-app_io/build/apps/gys_io /beegfs/aloupoue/gys_io.yaml /beegfs/aloupoue/pdi_fpp.yaml"
+
+scripts:
+  - name: "gys_io subfile benchmark"
+    script_template: |
+      #!/bin/bash
+      #SBATCH --job-name=gys_io
+      #SBATCH --nodes={{ nodes }}
+      #SBATCH --ntasks-per-node={{ tasks_per_node }}
+      #SBATCH --time=00:05:00
+      #SBATCH --exclusive
+      #SBATCH --constraint='bora'
+      
+      set -e
+      set -o pipefail
+
+      DIR="/beegfs/aloupoue/ost_8"
+      if [-d "$DIR"] && [ "$(ls -A "$DIR")" ]; then
+        rm -rf /beegfs/aloupoue/ost_8/*
+      fi
+
+      source ~/env_sub.sh
+
+  
+      mpirun -np $SLURM_NTASKS --map-by ppr:{{ tasks_per_node }}:node {{ command.template }} >> {{ execution_dir }}/slurm.out >&1
+      
+    parser:
+      file: "{{ execution_dir }}/slurm.out"
+      metrics:
+        - name: time_write
+          type: float
+        - name: time_total
+          type: float
+        - name: bandwidth
+          type: float 
+      parser_script: |
+        import json
+        import os
+
+        def parse(file_path):
+          with open(file_path, "r") as f:
+              lines = f.readlines()
+              time_write = None
+              time_total = None
+              for line in lines:
+                if "Time write:" in line:
+                  # Extract the time_write value from the line and retrieve the letter 's'
+                  time_write = float(line.split("Time write:")[1].strip().rstrip('s'))
+                elif "Time total:" in line:
+                  # Extract the time_total value from the line and retrieve the letter 's'
+                  time_total = float(line.split("Time total:")[1].strip().rstrip('s'))
+
+          return {
+            "time_write": time_write,
+            "time_total": time_total,
+            "bandwidth": round((68719484416 / (1024**3))/time_write, 2) if time_write else None
+          }
+
+
+output:
+  sink:
+    type: csv
+    path: "{{ workdir }}/results_gys_io_bora.csv"
