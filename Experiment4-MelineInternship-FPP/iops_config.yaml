@@ -46,15 +46,12 @@ scripts:
       set -e
       set -o pipefail
 
-      DIR="/beegfs/aloupoue/ost_8"
-      if [-d "$DIR"] && [ "$(ls -A "$DIR")" ]; then
-        rm -rf /beegfs/aloupoue/ost_8/*
-      fi
+      source ~/clean_ost.sh
 
       source ~/env_sub.sh
 
   
-      mpirun -np $SLURM_NTASKS --map-by ppr:{{ tasks_per_node }}:node {{ command.template }} >> {{ execution_dir }}/slurm.out >&1
+      mpirun -np $SLURM_NTASKS {{ command.template }} >> {{ execution_dir }}/slurm.out >&1
       
     parser:
       file: "{{ execution_dir }}/slurm.out"
