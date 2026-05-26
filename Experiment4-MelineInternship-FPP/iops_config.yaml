@@ -3,11 +3,11 @@
 # =============================================================================
 benchmark:
   name: "Gys_io Benchmark - Subfiling"
-  workdir: "/beegfs/aloupoue/iops_runs"
+  workdir: "./"
   repetitions: 5
   search_method: "exhaustive"
   executor: "slurm"
-  cache_file: "/beegfs/aloupoue/iops_cache.db"
+  cache_file: "./iops_cache.db"
   probes:
     resource_sampling: true
     sampling_interval: 1
@@ -17,20 +17,26 @@ vars:
     type: int
     sweep:
       mode: list
-      values: [2, 4, 8, 16]
+      values: [2]
     
   tasks_per_node:
     type: int
     sweep:
       mode: list
-      values: [4, 8, 16, 32]
+      values: [8]
+
+  ost_number:
+    type: int
+    sweep:
+      mode: list
+      values: [1, 2, 4, 8]
 
   gys_io_output:
     type: str
     expr: "{{ execution_dir }}/summary.txt"
 
 command:
-  template: "~/gysela-mini-app_io/build/apps/gys_io /beegfs/aloupoue/gys_io.yaml /beegfs/aloupoue/pdi_fpp.yaml"
+  template: "~/gysela-mini-app_io/build/apps/gys_io /beegfs/aloupoue/gys_io.yaml /beegfs/aloupoue/pdi_fpp{{ ost_number }}.yaml"
 
 scripts:
   - name: "gys_io subfile benchmark"

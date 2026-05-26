@@ -3,12 +3,11 @@
 # =============================================================================
 benchmark:
   name: "Gys_io Benchmark - Subfiling"
-  workdir: "./"
+  workdir: "/beegfs/aloupoue/iops_runs"
   repetitions: 5
   search_method: "exhaustive"
   executor: "slurm"
-  cache_file: "./iops_cache.db"
-  cache_exclude_vars: ["gys_io_output"]
+  cache_file: "/beegfs/aloupoue/iops_cache.db"
   probes:
     resource_sampling: true
     sampling_interval: 1
@@ -24,7 +23,7 @@ vars:
     type: int
     sweep: 
       mode: list
-      values: [8, 16, 32, 64, 128]
+      values: [2, 4, 6, 8]
 
   pdi_config:
     type: str
@@ -51,7 +50,10 @@ scripts:
       set -e
       set -o pipefail
 
-      source ~/clean_ost.sh
+      DIR="/beegfs/aloupoue/ost_4"
+      if [-d "$DIR"] && [ "$(ls -A "$DIR")" ]; then
+        rm -rf "$DIR"/*
+      fi
 
       source ~/env_sub.sh
 

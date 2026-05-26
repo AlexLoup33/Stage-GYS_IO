@@ -25,8 +25,6 @@ types:
     size: &mu_size [ '$mu_extents[0]' ]
 
 metadata:
-  mpi_rank: int
-
   gysela_io_filename_size: size_t
   gysela_io_filename: {type: array, subtype: char, size: "$gysela_io_filename_size"}
 
@@ -201,7 +199,7 @@ plugins:
               start: [ '$local_fdistribu_starts[0]', '$local_fdistribu_starts[1]', '$local_fdistribu_starts[2]', '$local_fdistribu_starts[3]', '$local_fdistribu_starts[4]', '$local_fdistribu_starts[5]' ]
 
     #-- Write timing (as table: names and values arrays)
-    - file: '/beegfs/aloupoue/ost_1/cpu_time.h5'
+    - file: '/beegfs/aloupoue/ost_4/cpu_time.h5'
       on_event: [write_timing]
       collision_policy: replace_and_warn
       write:
@@ -209,16 +207,17 @@ plugins:
         timing_values: ~
         
     #-- Write distribution function and coordinates
-    - file: '/beegfs/aloupoue/ost_1/fdistribu_5D_output_${mpi_rank}.h5'
+    - file: '/beegfs/aloupoue/ost_4/fdistribu_5D_output.h5'
       on_event: [write_fdistribu]
       collision_policy: replace_and_warn
+      communicator: $MPI_COMM_WORLD
+      subfiling: 2
       datasets:
         fdistribu_sptor3Dv2D:
           type: array
           subtype: double
           size: [ '$species_extents[0]', '$tor1_extents[0]', '$tor2_extents[0]', '$tor3_extents[0]', '$vpar_extents[0]', '$mu_extents[0]' ]
       write:
-        mpi_rank: ~
         tor1: ~
         tor2: ~
         tor3: ~
@@ -228,9 +227,9 @@ plugins:
             dataset_selection:
               size: [ '$local_fdistribu_extents[0]', '$local_fdistribu_extents[1]', '$local_fdistribu_extents[2]', '$local_fdistribu_extents[3]', '$local_fdistribu_extents[4]', '$local_fdistribu_extents[5]' ]
               start: [ '$local_fdistribu_starts[0]', '$local_fdistribu_starts[1]', '$local_fdistribu_starts[2]', '$local_fdistribu_starts[3]', '$local_fdistribu_starts[4]', '$local_fdistribu_starts[5]' ]
-              
+
     #-- Write fluid moments
-    - file: '/beegfs/aloupoue/ost_1/fluid_moments.h5'
+    - file: '/beegfs/aloupoue/ost_4/fluid_moments.h5'
       on_event: [write_fluid_moments]
       collision_policy: replace_and_warn
       write:
