@@ -93,72 +93,56 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Titre du chapitre 2}
+\section{Objectifs}
 \frame{\sectionpage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Mise en page sur 2 colonnes}
-  \begin{columns}
-      
-      \begin{column}[t]{0.45\textwidth}
-          \begin{center}
-          \includegraphics[width=0.95\textwidth]{imgs/photo.png}      
-          \end{center}
-      \end{column}
-        
-    \begin{column}[t]{0.45\textwidth}
-
-           \begin{block}{Premier niveau de liste (Titre)}
-           Deuxième niveau de liste (Texte courant).
-             \begin{itemize}
-               \item Troisième niveau de liste (Puce 1).
-                   \begin{itemize}
-                     \item Quatrième niveau de liste (Puce 2).
-                        \begin{itemize}
-                           \item Cinquième niveau de liste (Puce 3).
-                        \end{itemize}
-                   \end{itemize}
-             \end{itemize}
-           \end{block}
-
-           \begin{block}{Premier niveau de liste (Titre)}
-           Deuxième niveau de liste (Texte courant).
-             \begin{itemize}
-               \item Troisième niveau de liste (Puce 1).
-                   \begin{itemize}
-                     \item Quatrième niveau de liste (Puce 2).
-                   \end{itemize}
-             \end{itemize}
-           \end{block}
-
-         \end{column}
-         
-  \end{columns}
+\begin{frame}{Objectifs du stage}
+  \begin{block}{Objectifs}
+    \begin{itemize}
+      \item Analyser les performances I/O actuelles de Gysela.
+      \item Implémenter des techniques d'écriture asynchrone.
+      \item Évaluer les gains de performance obtenus.
+    \end{itemize}
+  \end{block}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Titre du chapitre 3}
+\section{Environnement d'expérimentation}
 \frame{\sectionpage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Deux autres exemples de blocs}
-    \begin{exampleblock}{}
+\begin{frame}{Environnement d'expérimentation}
+    \begin{block}{}
       \begin{itemize}
-        \item{Item 1 }
-        \item {Item 2}
-        \item {Item 3}
+        \item Calcul effectué sur Plafrim : Noeuds bora (44 nœuds).
+        \begin{itemize}
+          \item CPU : 2x 18-core Cascade Lake Intel Xeon Skylake Gold 6240 @ 2.6 GHz.
+          \item Mémoire : 192 GB (5.3 GB/core) @ 2993 MT/s.
+          \item Network : Omnipath 100Gbit/s \& Ethernet 10Gbit/s.
+        \end{itemize}
+        \item Dimension de la simulation : 128x128x128x64x64 (5D).
+        \item Taille du checkpoint : 540Gb.
+        \item Système de fichiers : BeeGFS (avec 8 OST maximum) et un chunksize de 512KB.
       \end{itemize}
-    \end{exampleblock}
-    \begin{exampleblock}{Avec titre}
-      \begin{itemize}
-        \item{Item 1 }
-        \item {Item 2}
-        \item {Item 3}
-      \end{itemize}
-    \end{exampleblock}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Outils de mesure des performances}
+    \begin{block}{IOPS}
+        \begin{itemize}
+            \item Indication des paramètres à faire varier
+            \item Extraction de métriques
+            \begin{itemize}
+              \item Temps d'écriture (metrics.time\_write)
+              \item Temps total (metrics.total\_time)
+              \item Utilisation de la bande passante (metrics.bandwidth)
+            \end{itemize}
+        \end{itemize}
+    \end{block}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
