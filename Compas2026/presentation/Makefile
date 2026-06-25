@@ -4,6 +4,7 @@ LATEXCMD=lualatex
 
 %.pdf: %.tex
 	TEXINPUTS=.:theme//:latex-inria-fonts//: \
+	OSFONTDIR=.:theme//:latex-inria-fonts//: \
 	${LATEXCMD} -file-line-error -halt-on-error $<
 
 clean:

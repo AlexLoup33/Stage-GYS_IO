@@ -1,0 +1,44 @@
+\begin{tikzpicture}[
+    scale=0.8, every node/.style={transform shape},
+    % Styles des blocs
+    mpi/.style={rectangle, draw=blue!70!black, fill=blue!10, thick, minimum width=1.1cm, minimum height=0.5cm, rounded corners=2pt},
+    ioc/.style={rectangle, draw=teal!80!black, fill=teal!10, ultra thick, minimum width=1.6cm, minimum height=0.6cm, align=center},
+    sub/.style={rectangle, draw=rouge_inria, fill=rouge_inria!10, ultra thick, minimum width=2.2cm, minimum height=0.6cm, align=center}
+]
+
+    % 1. Rangs MPI (Groupe 1 et Groupe 2)
+    \node[mpi] (m0) at (-3.5, 3) {R0};
+    \node[mpi] (m1) at (-2.2, 3) {R1};
+    \node (dots1) at (-1.1, 3) {$\dots$};
+    
+    \node[mpi] (m2) at (1.1, 3) {R2};
+    \node[mpi] (m3) at (2.4, 3) {R3};
+    \node (dots2) at (3.5, 3) {$\dots$};
+    
+    \node[anchor=west, text=blue!80!black] at (4.2, 3) {\textbf{Rangs MPI}};
+
+    % 2. I/O Concentrators (IOC)
+    \node[ioc] (ioc1) at (-2.2, 1.2) {\textbf{IOC 1}};
+    \node[ioc] (ioc2) at (2.2, 1.2) {\textbf{IOC 2}};
+    
+    \node[anchor=west, text=teal!80!black] at (4.2, 1.2) {\textbf{Agrégateurs (IOC)}};
+
+    % Flèches Rangs -> IOC
+    \draw[->, >=stealth, thick, blue!70!black] (m0.south) -- (ioc1.north west);
+    \draw[->, >=stealth, thick, blue!70!black] (m1.south) -- (ioc1.north);
+    \draw[->, >=stealth, thick, blue!70!black] (m2.south) -- (ioc2.north);
+    \draw[->, >=stealth, thick, blue!70!black] (m3.south) -- (ioc2.north east);
+
+    % 3. Subfiles autonomes
+    \node[sub] (f1) at (-2.2, -0.6) {\textbf{Subfile 1}};
+    \node[sub] (f2) at (2.2, -0.6) {\textbf{Subfile 2}};
+    
+    \node[anchor=west, text=rouge_inria] at (4.2, -0.6) {\textbf{Fichiers sur PFS}};
+
+    % Flèches IOC -> Subfiles (Écritures indépendantes en parallèle)
+    \draw[->, >=stealth, line width=1.5pt, teal!80!black] (ioc1.south) -- (f1.north) 
+        node[midway, right, scale=0.8, text=black] {Écriture};
+    \draw[->, >=stealth, line width=1.5pt, teal!80!black] (ioc2.south) -- (f2.north)
+        node[midway, right, scale=0.8, text=black] {Écriture};
+
+\end{tikzpicture}

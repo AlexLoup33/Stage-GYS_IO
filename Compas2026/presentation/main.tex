@@ -1,179 +1,455 @@
-\documentclass[A4,svgnames,9pt,aspectratio=169]{beamer}
-%% document options:
-%% - aspectratio = { 43, 169, 1610 }
-%% - utf8
-%%
+\documentclass[svgnames,9pt,aspectratio=169]{beamer}
 
-%%
-%% insert list of packages
-%%
-
-%% \usepackage[english,french]{babel}
+\usepackage{comment}
 
 \hypersetup{
    allcolors=rouge_inria,
-   pdfauthor   = {firstname lastname},
-   pdftitle    = {\@title},
-   pdfsubject  = {Resum\'{e} of everything},
-   pdfkeywords = {firstname~lastname, curriculum vit\ae{}}
+   pdfauthor   = {Alexandre Lou-Poueyou},
+   pdftitle    = {Amélioration des performances I/O de Gysela},
+   pdfsubject  = {ComPas 2026 --- TaDaaM/Inria},
+   pdfkeywords = {HPC, I/O, Gysela, BeegFS, checkpointing}
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcount\draftmode
+\draftmode=0
 
-\title[titrecourt]{Amélioration des performances I/O de Gysela}
-\subtitle{Stage de M1, 2026}
-\date[00/07/2026]{date long}
-\author[A. et al.]{Alexandre Lou-Poueyou}
+\title[I/O Gysela]{Amélioration des performances I/O\\de l'application HPC Gysela}
+\subtitle{ComPas 2026}
+\date[Juillet 2026]{3 Juillet 2026}
+\author[A. Lou-Poueyou]{Alexandre Lou-Poueyou\\Encadrants: Francieli Boito, Méline Trochon, Luan Teylo}
+\institute{Inria Bordeaux, équipe TaDaaM \and CEA}
 
 \usetheme{inria}
 
 \begin{document}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+% ============================================================
 \frame{\titlepage}
+% ============================================================
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Le titre des planches de sommaire est \contentsname, sa valeur
-% est fixée ici à "Sommaire" par défaut.
-\renewcommand{\contentsname}{Sommaire}
-
-% Si le package babel est utilisé la valeur
-% prend celle par défaut de la langue sélectionnée.
-% Pour imposer une valeur, y compris lors de l'utilisation de
-% babel, faire attention à redéfinir cette variable _après_
-% un \selectlanguage{}
-
-% \selectlanguage{french}
-% \selectlanguage{english}
-
+\renewcommand{\contentsname}{Plan}
 \frame{\tocpage}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
+% ============================================================
 \section{Introduction}
 \frame{\sectionpage}
+% ============================================================
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Gysela --- Simulation gyrocinétique de la turbulence plasma}
 
-\begin{frame}{Présentation Gysela}
-  \begin{block}{Gysela}
+  \vspace{0.4em}
+
+  \begin{columns}[t]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Contexte : fusion nucléaire}
+        \begin{itemize}
+          \item Les tokamaks confinent un plasma à très haute température
+          \item La \textbf{turbulence plasma} dégrade le confinement
+          \item \textbf{Gysela} : code de simulation gyrocinétique développé par le CEA pour étudier cette turbulence
+          \item Modèle de Vlasov gyrocinétique \textbf{5D} :
+                $f(r,\ \theta,\ \varphi,\ v_\parallel,\ \mu)$
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{L'écriture des checkpoints présente un problème}
+        \begin{itemize}
+          \item Les checkpoints en production sont volumineux et \textbf{bloquent} la simulation
+          \item Variabilité jusqu'à \textbf{$\times$3} sur un système de fichier parallel (PFS) partagé en production
+          \begin{itemize}
+            \item Trouver une meilleure stratégie I/O est \textbf{critique}
+          \end{itemize}
+          \item Volume de données très important à écrire
+        \end{itemize}
+      \end{alertblock}
+
+      \vspace{0.4em}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Problématique}
+  \begin{block}{Notre objectif}
     \begin{itemize}
-      \item Code de simulation de turbulence dans les plasmas de fusion.
-      \item Modèle de Vlasov gyro-kinétique 5D.
-      \item C++/Fortran.
-    \end{itemize}
-  \end{block}
-
-  \begin{block}{Problématique}
-    \begin{itemize}
-      \item Checkpoint régulier nécessaire pour éviter la perte de données en cas de crash.
-      \item Bloque la simulation pendant l'écriture.
-      \item Objectif : réduire le temps d'écriture.
+      \item \textbf{Améliorer} les performances d'écriture des checkpoints
+      \item \textbf{Étudier} l'impact de plusieurs paramètres I/O
+      \item Trouver la meilleure stratégie I/O pour Gysela en contexte HPC
     \end{itemize}
   \end{block}
 \end{frame}
 
-\subsection{Problématique I/O}
-
-\begin{frame}{Problématique I/O}
-  \begin{block}{Checkpointing}
-    \begin{itemize}
-      \item Grosse simulation nécessitant beaucoup de nœuds de calcul.
-      \item Checkpoint régulier pour éviter la perte de données.
-      \item Bloque la simulation pendant l'écriture.
-    \end{itemize}
-  \end{block}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Objectifs}
+\section{Concepts clés}
 \frame{\sectionpage}
+\begin{frame}{Système de fichiers parallèles -- PFS}
+  \begin{columns}[t]
+    
+    \begin{column}{0.46\textwidth}
+      \begin{block}{Object Storage Target -- OST}
+        \begin{itemize}
+          \item Unité de stockage logique ou physique
+          \begin{itemize}
+            \item Serveur de stockage
+            \item groupe de disques RAID
+          \end{itemize}
+          \item Stockage des données sous forme d'objets
+          \item Permet un découpage des données sur plusieurs système de stockage 
+        \end{itemize}
+      \end{block}
+    \end{column}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}{Objectifs du stage}
-  \begin{block}{Objectifs}
-    \begin{itemize}
-      \item Analyser les performances I/O actuelles de Gysela.
-      \item Implémenter des techniques d'écriture asynchrone.
-      \item Évaluer les gains de performance obtenus.
-    \end{itemize}
-  \end{block}
+    \begin{column}{0.46\textwidth}
+      \begin{block}{Le striping}
+        \begin{itemize}
+          \item Technique de distribution de données
+          \begin{itemize}
+            \item Découpage d'un fichier en blocs (\textit{stripes})
+            \item Repartition de ces blocs en parallèle sur les OST
+          \end{itemize}
+          \item Paramètre clés configurables:
+          \begin{itemize}
+            \item \textbf{Stripe Count}: nombre d'OST utilisés (ex: 1 à 8)
+            \item \textbf{Stripe Size}: taille de chaque bloc de données écrit dans un \textit{round-robin}
+          \end{itemize}
+          \item Objectif : Augmenter l'usage de la bande passante
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Single Shared File --- SSF}
+  \begin{columns}[t]
+    \begin{column}{0.30\textwidth}      
+        \begin{itemize}
+          \item Tous les rang MPI écrivent en parallèle dans un fichier commun.
+          \item Accès non contigus calculés par HDF5/MPI-IO
+          \item Aggrège toutes les données avant de les envoyer au PFS
+        \end{itemize}
+    \end{column}
 
-\section{Environnement d'expérimentation}
-\frame{\sectionpage}
+    \begin{column}{0.60\textwidth}
+      % Figure explication SSF %
+      \begin{center}
+        \input{figures/ssf-figure.tex}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}{Environnement d'expérimentation}
-    \begin{block}{}
+\begin{frame}{Subfiling}
+  \begin{columns}[t]
+    \begin{column}{0.30\textwidth}
       \begin{itemize}
-        \item Calcul effectué sur Plafrim : Noeuds bora (44 nœuds).
-        \begin{itemize}
-          \item CPU : 2x 18-core Cascade Lake Intel Xeon Skylake Gold 6240 @ 2.6 GHz.
-          \item Mémoire : 192 GB (5.3 GB/core) @ 2993 MT/s.
-          \item Network : Omnipath 100Gbit/s \& Ethernet 10Gbit/s.
-        \end{itemize}
-        \item Dimension de la simulation : 128x128x128x64x64 (5D).
-        \item Taille du checkpoint : 540Gb.
-        \item Système de fichiers : BeeGFS (avec 8 OST maximum) et un chunksize de 512KB.
+        \item Les rangs MPI sont divisés en plusieurs \textbf{groupes (sous-ensembles)}.
+        \item Chaque groupe élit un ou plusieurs \textbf{I/O Concentrators (IOC)} / Agrégateurs.
+        \item L'application écrit un nombre fixe de fichiers intermédiaire régient par un fichier de configuration
       \end{itemize}
-    \end{block}
+    \end{column}
+
+    \begin{column}{0.60\textwidth}
+      \begin{center}
+        \input{figures/subfiling-figure.tex}
+      \end{center}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{Outils de mesure des performances}
-    \begin{block}{IOPS}
+\begin{frame}{Single Shared File --- SSF}
+  \begin{columns}[t]
+    \begin{column}{0.30\textwidth}
+      \begin{itemize}
+        \item Chaque rang MPI gère son unique portion de données
+        \item Chaque rang crée, écrit et ferme son fichier indépendamment des autres
+        \item Génère autant de fichier que de processus MPI
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{0.60\textwidth}
+      \begin{center}
+        \input{figures/fpp-figure.tex}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ============================================================
+\section{Méthodologie}
+\frame{\sectionpage}
+% ============================================================
+
+\begin{frame}{Outils et approche expérimentale}
+
+  \vspace{0.5em}
+
+  \begin{columns}[t]
+    \begin{column}{0.46\textwidth}
+      \begin{block}{gys\_io --- Noyau I/O de Gysela}
         \begin{itemize}
-            \item Indication des paramètres à faire varier
-            \item Extraction de métriques
-            \begin{itemize}
-              \item Temps d'écriture (metrics.time\_write)
-              \item Temps total (metrics.total\_time)
-              \item Utilisation de la bande passante (metrics.bandwidth)
-            \end{itemize}
+          \item Reproduit le pattern d'écriture des checkpoints de Gysela
+          \item[$\Rightarrow$] Benchmarks rapides et reproductibles
+          \item Grille 5D : $128 \times 128 \times 64 \times 64 \times 64$
         \end{itemize}
-    \end{block}
+      \end{block}
+
+      \vspace{0.8em}
+
+      \begin{block}{PDI --- Configuration des stratégies I/O}
+        \begin{itemize}
+          \item Stratégies I/O changées via \textbf{fichier YAML}
+          \item Single Shared File (SSF), Subfiling, File Per Process (FPP)
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{block}{IOPS --- Automatisation des benchmarks}
+        \begin{itemize}
+          \item Balayage paramétrique et soumission SLURM
+          \item Extraction : \texttt{time\_write} (s), \texttt{time\_total} (s)
+        \end{itemize}
+      \end{block}
+
+      \vspace{0.8em}
+
+      \begin{exampleblock}{Plafrim --- Première étude de cas}
+        \begin{itemize}
+          \item PFS BeegFS, jusqu'à \textbf{8 OST}
+          \item Jusqu'à 44 nœuds \texttt{bora} disponibles
+          \item 5 répétitions par configuration, allocation exclusive
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% ============================================================
+\section{Résultats}
+\frame{\sectionpage}
+% ============================================================
 
+% --- OST impact ---
+\begin{frame}{Configuration PFS --- Impact du nombre d'OST sur le temps d'écriture}
+
+  \vspace{0.5em}
+
+  \begin{columns}[t]
+    \begin{column}{0.55\textwidth}
+      \begin{center}
+        \includegraphics[width=0.95\textwidth]{figures/fig1.pdf}
+        \textit{[Figure : temps d'écriture (s) en fonction du nombre d'OST, 1 à 8]}
+      \end{center}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+
+      \vspace{1em}
+
+      \begin{block}{Observation}
+        \begin{itemize}
+          \item Gain de presque \textbf{$\times$5} : 1 OST $\rightarrow$ 8 OST
+          \item Progression quasi-linéaire jusqu'à 5 OST
+          \item Plateau au-delà de 5--7 OST
+        \end{itemize}
+      \end{block}
+
+      \vspace{0.8em}
+
+      \begin{alertblock}{À retenir}
+        Utilisation de \textbf{8 OST} pour tous les tests suivants.
+      \end{alertblock}
+
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+% --- Scalabilité toutes stratégies ---
+\begin{frame}{Scalabilité MPI --- Toutes stratégies (8 tâches/nœud, 8 OST)}
+
+  \vspace{0.5em}
+
+  \begin{columns}[t]
+    \begin{column}{0.55\textwidth}
+      \begin{center}
+        \includegraphics[width=0.95\textwidth]{figures/fig2_scalability_all_talk_correct.pdf}
+        \textit{[Figure : temps d'écriture (s) vs nœuds --- 3 courbes : SSF, Subfiling, FPP]}
+      \end{center}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+
+      \vspace{1em}
+
+      \begin{block}{SSF}
+        Scalabilité quasi-linéaire --- meilleur à grande échelle
+      \end{block}
+
+      \vspace{0.4em}
+
+      \begin{exampleblock}{Subfiling}
+        S'améliore positivement --- se stabilise à 8--16 nœuds
+      \end{exampleblock}
+
+      \vspace{0.4em}
+
+      \begin{alertblock}{FPP}
+        Dégradation \textbf{très légère} avec le nombre de nœuds mais \textbf{meilleures performances} dans toutes les configurations
+      \end{alertblock}
+
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+
+\begin{comment}
+  
+  % --- Topologie MPI ---
+  \begin{frame}{Topologie MPI --- Même nombre de rangs, performances comparées}
+  
+  \vspace{0.5em}
+  
+  \begin{columns}[t]
+  \begin{column}{0.55\textwidth}
+  \begin{center}
+  \includegraphics[width=0.95\textwidth]{figures/fig3.pdf}
+  \textit{[Figure : temps d'écriture (s) --- 2$\times$8 vs 4$\times$4 \& 8$\times16$ vs 16$\times8$]}
+\end{center}
+\end{column}
+\begin{column}{0.40\textwidth}
+
+\vspace{1em}
+
+\begin{alertblock}{FPP : aucune différence}
+16 rangs MPI, même volume de données.\\[4pt]
+Aucune différence visible entre les topologies 2$\times$8 et 4$\times$4.\\[4pt]
+La topologie n'affecte pas les performances FPP.
+\end{alertblock}
+
+\vspace{0.8em}
+
+\begin{exampleblock}{Subfiling : le nombre d'agrégateurs pourrait jouer}
+Actuellement autant d'IOC que de subfiles --- modifier ce ratio pourrait améliorer les performances
+\end{exampleblock}
+
+\end{column}
+\end{columns}
+
+\end{frame}
+\end{comment}
+
+% --- Subfiling ---
+\begin{frame}{Subfiling --- Nombre optimal de subfiles et modification du code}
+
+  \vspace{0.5em}
+
+  \begin{columns}[t]
+    \begin{column}{0.55\textwidth}
+      \begin{center}
+        \includegraphics[width=0.95\textwidth]{figures/fig4_subfile_count_talk.pdf}
+        \textit{[Figure : temps d'écriture (s) vs nombre de subfiles, config 16$\times$8]}
+      \end{center}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+
+      \vspace{1em}
+
+      \begin{block}{Observation}
+        \begin{itemize}
+          \item Optimal à \textbf{8 subfiles} = nb OST
+          \item Confirme : \textbf{nb\_subfiles = nb\_OST}
+          \item Différence 8 vs 16 : $<$3\%
+        \end{itemize}
+      \end{block}
+
+      \vspace{0.8em}
+
+      \begin{exampleblock}{Modification du code requise}
+        Le Subfiling nécessite \texttt{MPI\_THREAD\_MULTIPLE}\\[4pt]
+        \texttt{MPI\_Init()} $\rightarrow$ \texttt{MPI\_Init\_thread(...,}\\
+        \texttt{MPI\_THREAD\_MULTIPLE, ...)}\\[4pt]
+        Nécessaire pour les appels MPI des threads IOC
+      \end{exampleblock}
+
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+% --- FPP ---
+\begin{frame}{FPP --- Bonnes performances constantes}
+
+  \vspace{0.5em}
+
+  \begin{columns}[t]
+    \begin{column}{0.55\textwidth}
+      \begin{center}
+        \includegraphics[width=0.95\textwidth]{figures/fig5_correct.pdf}
+        \textit{[Figure : temps d'écriture et temps total (s) vs nœuds --- FPP uniquement]}
+      \end{center}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+
+
+      \begin{block}{Performances peak}
+        Meilleures performances I/O avec une très légère dégradation qui se stabilise à 8 nœuds
+      \end{block}
+
+
+      \begin{alertblock}{Le vrai compromis}
+        FPP ne nécessite pas de topologie particulière pour ses meilleures performances I/O.\\[4pt]
+        Gysela en production requiert \textbf{beaucoup de nœuds} -- heureusement les performances restent stables entre petites et grandes configurations.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+
+\end{frame}
+
+% ============================================================
 \section{Conclusion}
-\begin{frame}{Conclusion}
+\frame{\sectionpage}
+% ============================================================
 
-    {\tiny         The quick brown fox jumps over the lazy dog}\\
-    {\scriptsize   The quick brown fox jumps over the lazy dog}\\
-    {\footnotesize The quick brown fox jumps over the lazy dog}\\
-    {\small        The quick brown fox jumps over the lazy dog}\\
-    {\normalsize   The quick brown fox jumps over the lazy dog}\\
-    {\large        The quick brown fox jumps over the lazy dog}\\
-    {\Large        The quick brown fox jumps over the lazy dog}\\
-    {\LARGE        The quick brown fox jumps over the lazy dog}\\
-    {\huge         The quick brown fox jumps over the lazy dog}\\
-    {\Huge         The quick brown fox jumps over the lazy dog}
+\begin{frame}{Meilleures configurations et perspectives}
 
+  \vspace{0.5em}
+
+  \begin{columns}[t]
+    \begin{column}{0.46\textwidth}
+      \begin{block}{Recommandations --- Plafrim/BeegFS}
+        \begin{itemize}
+          \item Toujours utiliser \textbf{8 OST} --- gain $\times$5 gratuit
+          \item \textbf{FPP recommandé} à cette échelle de grille
+          \item Subfiling : fixer \textbf{nb\_subfiles = nb\_OST}
+        \end{itemize}
+      \end{block}
+
+      \vspace{0.8em}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{exampleblock}{À confirmer}
+        \begin{itemize}
+          \item Plus d'OST améliorent-ils les performances Subfiling ?
+          \item Est ce que la stripe size a t elle un impact concret à grande échelle ?
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Futures Travaux}
+  \begin{block}{Perspectives}
+    \begin{itemize}
+      \item \textbf{Montée en échelle} sur Adastra et Irène
+      \item \textbf{Weak scaling} --- grille 5D proportionnelle aux rangs
+      \item \textbf{I/O Concentrators} (\texttt{aggregator\_count}) --- impact sur Subfiling
+      \item \textbf{IOPS + Optimisation bayésienne} --- recherche automatique de configuration optimale
+      \item \textbf{VeloC}  --- Utilisation de VeloC pour essayer de remplacer HDF5
+      \item \textbf{GPU I/O} --- Explorer les possibilités de GPU direct I/O
+    \end{itemize}
+  \end{block}
+\end{frame}
 
-%% Le texte est modifiable en changeant \thankyou
-%% \renewcommand{\thankyou}{Thank You.}
+% ============================================================
 \frame{\merci}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% ============================================================
 
 \end{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-

@@ -1,0 +1,32 @@
+\begin{tikzpicture}[
+    scale=0.8, every node/.style={transform shape},
+    mpi/.style={rectangle, draw=blue!70!black, fill=blue!10, thick, minimum width=1.1cm, minimum height=0.5cm, rounded corners=2pt},
+    pfs/.style={rectangle, draw=rouge_inria, fill=rouge_inria!10, ultra thick, minimum width=2.2cm, minimum height=0.6cm, align=center}
+]
+
+    \node[mpi] (m0) at (-4.5, 3) {R0};
+    \node[mpi] (m1) at (-2.5, 3) {R1};
+    \node (dots1) at (-1.1, 3) {$\dots$};
+    
+    \node[mpi] (m2) at (0.4, 3) {R2};
+    \node[mpi] (m3) at (2.4, 3) {R3};
+    \node (dots2) at (3.5, 3) {$\dots$};
+    
+    \node[anchor=west, text=blue!80!black] at (4.2, 3) {\textbf{Rangs MPI}};
+
+    \node[pfs] (f0) at (-4.5, 1.2) {\textbf{file\_0}};
+    \node[pfs] (f1) at (-2.5, 1.2) {\textbf{file\_1}};
+    
+    \node (dots3) at (-1.1, 1.2) {$\dots$};
+
+    \node[pfs] (f2) at (0.4, 1.2) {\textbf{file\_2}};
+    \node[pfs] (f3) at (2.4, 1.2) {\textbf{file\_3}};
+
+    \node[anchor=west, text=teal!80!black] at (4.2, 1.2) {\textbf{Fichier}};
+
+    \draw[->, >=stealth, thick, blue!70!black] (m0.south) -- (f0.north);
+    \draw[->, >=stealth, thick, blue!70!black] (m1.south) -- (f1.north);
+    \draw[->, >=stealth, thick, blue!70!black] (m2.south) -- (f2.north);
+    \draw[->, >=stealth, thick, blue!70!black] (m3.south) -- (f3.north);
+
+\end{tikzpicture}
