@@ -35,6 +35,8 @@
 \frame{\sectionpage}
 % ============================================================
 
+\setlength{\leftmarginii}{0.5cm}
+
 \begin{frame}{Gysela --- Simulation gyrocinétique de la turbulence plasma}
 
   \vspace{0.4em}
@@ -154,7 +156,7 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{Single Shared File --- SSF}
+\begin{frame}{File Per Process --- FPP}
   \begin{columns}[t]
     \begin{column}{0.30\textwidth}
       \begin{itemize}
@@ -186,7 +188,7 @@
       \begin{block}{gys\_io --- Noyau I/O de Gysela}
         \begin{itemize}
           \item Reproduit le pattern d'écriture des checkpoints de Gysela
-          \item[$\Rightarrow$] Benchmarks rapides et reproductibles
+          \item Benchmarks rapides et reproductibles
           \item Grille 5D : $128 \times 128 \times 64 \times 64 \times 64$
         \end{itemize}
       \end{block}
