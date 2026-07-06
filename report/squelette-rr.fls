@@ -1,9 +1,9 @@
-PWD /home/aloupoue/Documents/Stage-GYS_IO/report
+PWD /home/alexloup/Documents/Stage-GYS_IO/report
 INPUT /etc/texmf/web2c/texmf.cnf
 INPUT /usr/share/texmf/web2c/texmf.cnf
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
 INPUT /var/lib/texmf/web2c/pdftex/pdflatex.fmt
-INPUT /home/aloupoue/Documents/Stage-GYS_IO/report/squelette-rr.tex
+INPUT /home/alexloup/Documents/Stage-GYS_IO/report/squelette-rr.tex
 OUTPUT squelette-rr.log
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/article.cls
