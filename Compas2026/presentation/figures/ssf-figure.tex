@@ -16,7 +16,7 @@
     \node[anchor=west, text=blue!80!black] at (4.5, 2.5) {\textbf{Mémoire Calcul}};
 
     % 2. Étape d'Agrégation (I/O Collective)
-    \node[agg] (aggregation) at (0, 0.3) {\textbf{Couche MPI-IO / HDF5 (I/O Collective)}\\Calcul des \textit{offsets} \& Fusion en tampons contigus};
+    \node[agg] (aggregation) at (0, 0.3) {\textbf{Couche MPI-IO / HDF5 (I/O Collective)}\\Calcul des \textit{offsets}};
 
     % Flèches Processus -> Agrégation
     \draw[->, >=stealth, thick, blue!70!black] (mpi0.south) -- (-2.5, 1) node[midway, left, scale=0.8] {$\mu_0$};

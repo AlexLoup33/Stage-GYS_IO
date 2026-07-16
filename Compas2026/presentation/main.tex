@@ -74,8 +74,8 @@
   \begin{block}{Notre objectif}
     \begin{itemize}
       \item \textbf{Améliorer} les performances d'écriture des checkpoints
-      \item \textbf{Étudier} l'impact de plusieurs paramètres I/O
-      \item Trouver la meilleure stratégie I/O pour Gysela en contexte HPC
+      \item \textbf{Étudier} l'impact des différents paramètres sur les performances
+      \item Trouver la meilleure stratégie I/O pour Gysela
     \end{itemize}
   \end{block}
 \end{frame}
@@ -124,7 +124,6 @@
     \begin{column}{0.30\textwidth}      
         \begin{itemize}
           \item Tous les rang MPI écrivent en parallèle dans un fichier commun.
-          \item Accès non contigus calculés par HDF5/MPI-IO
           \item Aggrège toutes les données avant de les envoyer au PFS
         \end{itemize}
     \end{column}
@@ -206,7 +205,7 @@
       \begin{block}{IOPS --- Automatisation des benchmarks}
         \begin{itemize}
           \item Balayage paramétrique et soumission SLURM
-          \item Extraction : \texttt{time\_write} (s), \texttt{time\_total} (s)
+          \item Extraction : \texttt{time\_write} (s), \texttt{time\_total} (s), \texttt{bandwidth} (Gbit/s)
         \end{itemize}
       \end{block}
 
@@ -214,8 +213,7 @@
 
       \begin{exampleblock}{Plafrim --- Première étude de cas}
         \begin{itemize}
-          \item PFS BeegFS, jusqu'à \textbf{8 OST}
-          \item Jusqu'à 44 nœuds \texttt{bora} disponibles
+          \item PFS BeegFS, jusqu'à \textbf{8 OST} et 12 Gbit/s de bande passante
           \item 5 répétitions par configuration, allocation exclusive
         \end{itemize}
       \end{exampleblock}
@@ -230,15 +228,15 @@
 % ============================================================
 
 % --- OST impact ---
-\begin{frame}{Configuration PFS --- Impact du nombre d'OST sur le temps d'écriture}
+\begin{frame}{Configuration PFS --- Impact du nombre d'OST sur l'utilisation de la bande passante}
 
   \vspace{0.5em}
 
   \begin{columns}[t]
     \begin{column}{0.55\textwidth}
       \begin{center}
-        \includegraphics[width=0.95\textwidth]{figures/fig1.pdf}
-        \textit{[Figure : temps d'écriture (s) en fonction du nombre d'OST, 1 à 8]}
+        \includegraphics[width=0.95\textwidth]{figs/figure_gys_io_ost_bandwidth.pdf}
+        \textit{[Figure : bande passante (Gbit/s) en fonction du nombre d'OST, 1 à 8]}
       \end{center}
     \end{column}
     \begin{column}{0.40\textwidth}
@@ -248,8 +246,7 @@
       \begin{block}{Observation}
         \begin{itemize}
           \item Gain de presque \textbf{$\times$5} : 1 OST $\rightarrow$ 8 OST
-          \item Progression quasi-linéaire jusqu'à 5 OST
-          \item Plateau au-delà de 5--7 OST
+          \item Progression quasi-linéaire
         \end{itemize}
       \end{block}
 
@@ -272,8 +269,8 @@
   \begin{columns}[t]
     \begin{column}{0.55\textwidth}
       \begin{center}
-        \includegraphics[width=0.95\textwidth]{figures/fig2_scalability_all_talk_correct.pdf}
-        \textit{[Figure : temps d'écriture (s) vs nœuds --- 3 courbes : SSF, Subfiling, FPP]}
+        \includegraphics[width=0.95\textwidth]{figs/figure_gys_io_all_scale.pdf}
+        \textit{[Figure : bande passante (Gbit/s) vs nœuds --- 3 courbes : SSF, Subfiling, FPP]}
       \end{center}
     \end{column}
     \begin{column}{0.40\textwidth}
@@ -281,7 +278,7 @@
       \vspace{1em}
 
       \begin{block}{SSF}
-        Scalabilité quasi-linéaire --- meilleur à grande échelle
+        Meilleur à grande échelle
       \end{block}
 
       \vspace{0.4em}
@@ -293,7 +290,7 @@
       \vspace{0.4em}
 
       \begin{alertblock}{FPP}
-        Dégradation \textbf{très légère} avec le nombre de nœuds mais \textbf{meilleures performances} dans toutes les configurations
+        Dégradation avec le nombre de processus mais \textbf{meilleures performances} dans toutes les configurations
       \end{alertblock}
 
     \end{column}
@@ -346,8 +343,8 @@ Actuellement autant d'IOC que de subfiles --- modifier ce ratio pourrait amélio
   \begin{columns}[t]
     \begin{column}{0.55\textwidth}
       \begin{center}
-        \includegraphics[width=0.95\textwidth]{figures/fig4_subfile_count_talk.pdf}
-        \textit{[Figure : temps d'écriture (s) vs nombre de subfiles, config 16$\times$8]}
+        \includegraphics[width=0.95\textwidth]{figs/figure_gys_io_subfile_number.pdf}
+        \textit{[Figure : bande passante (Gbit/s) vs nombre de subfiles, config 16$\times$8]}
       \end{center}
     \end{column}
     \begin{column}{0.40\textwidth}
@@ -356,13 +353,12 @@ Actuellement autant d'IOC que de subfiles --- modifier ce ratio pourrait amélio
 
       \begin{block}{Observation}
         \begin{itemize}
-          \item Optimal à \textbf{8 subfiles} = nb OST
-          \item Confirme : \textbf{nb\_subfiles = nb\_OST}
-          \item Différence 8 vs 16 : $<$3\%
+          \item Optimal à partir de \textbf{8 subfiles}
+          \item Confirme : \textbf{nb\_subfiles optimal = nb\_OST}
         \end{itemize}
       \end{block}
 
-      \vspace{0.8em}
+      \vspace{0.3em}
 
       \begin{exampleblock}{Modification du code requise}
         Le Subfiling nécessite \texttt{MPI\_THREAD\_MULTIPLE}\\[4pt]
@@ -384,7 +380,7 @@ Actuellement autant d'IOC que de subfiles --- modifier ce ratio pourrait amélio
   \begin{columns}[t]
     \begin{column}{0.55\textwidth}
       \begin{center}
-        \includegraphics[width=0.95\textwidth]{figures/fig5_correct.pdf}
+        \includegraphics[width=0.95\textwidth]{figs/figure_gys_io_fpp_write_vs_total_time.pdf}
         \textit{[Figure : temps d'écriture et temps total (s) vs nœuds --- FPP uniquement]}
       \end{center}
     \end{column}
@@ -392,7 +388,7 @@ Actuellement autant d'IOC que de subfiles --- modifier ce ratio pourrait amélio
 
 
       \begin{block}{Performances peak}
-        Meilleures performances I/O avec une très légère dégradation qui se stabilise à 8 nœuds
+        Meilleures performances I/O avec une dégradation qui se stabilise à 8 nœuds
       \end{block}
 
 
@@ -416,9 +412,9 @@ Actuellement autant d'IOC que de subfiles --- modifier ce ratio pourrait amélio
 
   \begin{columns}[t]
     \begin{column}{0.46\textwidth}
-      \begin{block}{Recommandations --- Plafrim/BeegFS}
+      \begin{block}{Recommandations}
         \begin{itemize}
-          \item Toujours utiliser \textbf{8 OST} --- gain $\times$5 gratuit
+          \item Utilisation d'un grand nombre d'OST --- Plafrim : \textbf{8 OST} = gain $\times$5 gratuit
           \item \textbf{FPP recommandé} à cette échelle de grille
           \item Subfiling : fixer \textbf{nb\_subfiles = nb\_OST}
         \end{itemize}
@@ -442,10 +438,10 @@ Actuellement autant d'IOC que de subfiles --- modifier ce ratio pourrait amélio
     \begin{itemize}
       \item \textbf{Montée en échelle} sur Adastra et Irène
       \item \textbf{Weak scaling} --- grille 5D proportionnelle aux rangs
-      \item \textbf{I/O Concentrators} (\texttt{aggregator\_count}) --- impact sur Subfiling
+      \item \textbf{I/O Concentrators} (\texttt{nombre d'agrégateur}) --- impact sur Subfiling
       \item \textbf{IOPS + Optimisation bayésienne} --- recherche automatique de configuration optimale
-      \item \textbf{VeloC}  --- Utilisation de VeloC pour essayer de remplacer HDF5
-      \item \textbf{GPU I/O} --- Explorer les possibilités de GPU direct I/O
+      \item \textbf{VeloC}  --- Utilisation de VeloC pour remplacer HDF5
+      \item \textbf{GPU I/O} --- Explorer les possibilités de GPU direct
     \end{itemize}
   \end{block}
 \end{frame}
