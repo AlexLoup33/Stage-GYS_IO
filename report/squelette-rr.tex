@@ -65,20 +65,22 @@ Pour en savoir plus, consulter le fichier RR.dvi ou RR.pdf.
 D\'efinissez toujours les commandes avant utilisation.
 }
 \RRabstract{
-In modern High Performances Computing's (HPC) systems, Input/Output (I/O) 
-performances are often a limiting factor for large scale scientifics simulations.
-Since supercomputer power et data volume keep increasing, I/O performance optimization
-becomes essential in order to efficiently exploit available ressources. In this context,
-scientifics's applications are largely based on Parallel Files System (PFS) enabling the
-access at the same time to very large amount of datas. However, the results achieved highly
-depends of many configuration's parameters as well as grounds for accessing the data used by
-applications. Understanding and Optimizing those interactions constitues a crucial issue for
-improving HPC simulations global efficiency.\\ 
-This work is part of the optimization of I/O performances of the application called Gysela, 
-a simulation code developped by CEA for the study of plasma's turbulences in Tokamak, for the 
-study of nuclear fusion. Those simulations produce large amount of datas and needed regular checkpoints 
-writing, that allow to save the state of the simulation it can resume it in case of an interruption, 
-whether it is due to a hardware failure or a limitation on the allotted processing time on supercomputers.
+In modern High-Performance Computing (HPC) systems, Input/Output (I/O) performance 
+is a major bottleneck for large-scale scientific simulations. As computational power 
+and data volumes scale rapidly, optimizing I/O workflows becomes critical to efficiently 
+leverage supercomputing resources. Scientific applications heavily rely on Parallel File 
+Systems (PFS) to access vast datasets concurrently. However, achieved performance is highly 
+sensitive to PFS configurations, high-level I/O strategies, and application-specific access patterns. 
+Understanding and tuning the interactions between these layers is crucial for maximizing global simulation throughput.\\
+This work focuses on optimizing the checkpointing performance of Gysela, a 5D gyrokinetic simulation code 
+developed by the CEA for nuclear fusion research. Gysela generates massive datasets and relies on periodic 
+checkpointing for fault tolerance and job restartability. Using gys\_io, a lightweight mini-app replicating 
+Gysela’s parallel I/O patterns, we systematically evaluate and compare different parallel I/O strategies—namely 
+Single Shared File (SSF), Subfiling, and File Per Process (FPP)—alongside key PFS configuration parameters. 
+Our experiments, conducted on diverses clusters, analyze the performance trade-offs of these strategies 
+and parameters under various scaling conditions. The results identify optimal parallel configurations, 
+clarify the impact of PFS striping on each I/O strategy, and provide actionable optimization recommendations 
+to significantly reduce checkpointing overhead in future Gysela production runs.
 }
 \RRkeyword{HPC, Parallel I/O, Performances Tuning, Parallel File Systems}
 %%
@@ -116,15 +118,49 @@ whether it is due to a hardware failure or a limitation on the allotted processi
 \section{Introduction}
 \label{sec1}
 
-The growing gap between computational performance and I/O capabilities in modern HPC
-systems has become a critical concern for large-scale scientific simulations. 
-As supercomputers approach exascale, applications generate ever-increasing volumes of data, 
-making efficient data management essential for both performance and fault tolerance. 
-Among the various I/O patterns found in scientific codes, checkpointing—the periodic saving of 
-simulation state to enable job restart after failures or time limits—is particularly demanding, 
-as it involves writing large amounts of data in a short time window.\\
+\begin{itemize}
+  \item I/O is almost important as computation in HPC.
+  \item As supercomputer advance, computational power increases faster thant storage bandwidth, making I/O 
+operation a bottleneck.
+  \begin{itemize}
+    \item Find an exemple as Luan's example with ratio between computation and I/O perfs
+    \item \url{https://arxiv.org/pdf/2501.00203} <- article about difference of treatment between computation and I/O in HPC
+  \end{itemize}
+  \begin{center}
+    \includegraphics[width=0.4\textwidth]{figures/io_per_flop.pdf}
+  \end{center}
+  ratio between computation TFlops and I/O GB/s for top 500 supercomputer from 2020 to 2025.
 
-\section{Second section}
+  \item Large-Scale simulations generate unprecedented volumes of datas, much be stored and retrieved efficiently.
+  \begin{itemize}
+    \item Example like dataset for AI training (ChatGPT), weather or any kind of simulation
+  \end{itemize}
+  
+  \item I/O in parallel file system is a complex problem due to concurrent access, contention, and data distribution.
+  \item Gysela is a 5D gyrokinetic simulation code developed by CEA for nuclear fusion research (plasma turbulence in tokamaks).
+  \item Run on large amount of nodes and generate massives datasets
+  \begin{itemize}
+    \item Example of dataset size for Gysela
+    \item -> Ask Virginie about diverses size for Gysela prod
+  \end{itemize}
+
+  \item Due to long execution time and risk of hardware failure, Gysela relies on periodic (every X [ask virginie] iterations) checkpointing to save its state and allow clean restart
+  \item Writing checkpoint is synchronus and blocks the simulation progress, wasting expensive resources.
+  \item On production, checkpoint write time suffer from high variability sometimes up to x3 slower than average.
+  \item We must optimize both the PFS configuration and the I/O strategy
+  \item We use gys\_io, a lightweight mini-application that replicates Gysela's 5D grid checkpointing pattern.
+  \begin{itemize}
+    \item Explain more how gys\_io works
+  \end{itemize}
+  \item We leverage PDI (Parallel Data Interface) to implement different I/O strategies: Single Shared File (SSF), Subfiling, and File Per Process (FPP) by modifing the configuration file in yaml,
+  for flexible execution and neither code modification and compilation.
+  \item We submits tests and evaluate the performances with IOPS, a benchmarking tool developped by TADaaM team at Inria Bordeaux.
+  \item Our eval is conducted on different cluster with different PFS : Plafrim (with BeegFS) and Adastra (with Lustre). This allow us to test different PFS configuration
+  and analyze the impact of striping on each I/O strategy.
+  \item This work aims to identify optimal configurations and provide actionable recommendations to reduce checkpointing overhead in future Gysela production runs.
+\end{itemize}
+
+\section{Background}
 Text for the second section. This is closely related to the text in
 section \ref{sec1} on page \pageref{sec1}. \newpage
 
