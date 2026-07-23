@@ -118,18 +118,41 @@ to significantly reduce checkpointing overhead in future Gysela production runs.
 \section{Introduction}
 \label{sec1}
 
+In modern High-Performance Computing (HPC) systems, Input/Output (I/O) performance has become nearly critical as computational
+power itself. As supercomputer advance toward exascale capabilities, computational throughput has increased exponentially, yet
+storage bandwidth has lagged behind. This growing imbalance creates a fundamental bottleneck: while modern processors achieve teraflop-
+scale performance, parallel file systems typically deliver only tens to hundreds of gigabytes per second in aggregate bandwidth.
+Figure \ref{fig:io_per_flop} quantifies this imbalance using data from major supercomputers from 2000 to 2025. The I/O bandwidth 
+per unit of compute (measured in GBps per PetaFlop) has declined from $\sim$300 GBps/PF on ASCI Red (2000) to only $\sim$6 GBps/PF 
+on Frontier (2023) a 50-fold degradation. This trend accelerated sharply after 2015, demonstrating that I/O has become the dominant 
+bottleneck for modern exascale systems.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.6\textwidth]{figures/io_per_flop.pdf}
+  \caption{Compute-to-I/O performance gap in top 500 supercomputers (2000--2025).\\
+  The ratio of computational throughput to storage bandwidth has grown by an order of indicating that I/O is increasingly the limiting factor.}
+  \label{fig:io_per_flop}
+\end{figure}
+
+Large-scale scientific simulations generate massive data volumes requiring efficient I/O management. On parallel file systems, thousands of processes 
+must coordinate concurrent access to shared storage while contending for limited bandwidth.
+Gysela is a 5D gyrokinetic simulation code developed by the CEA (Commissariat à l'\'energie Atomique) for nuclear fusion research. It models plasma turbulence 
+in tokamaks by solving the Vlasov equation in a five-dimensional phase space: three spatial coordinates (minor radius and two toroidal angles) and two velocity-space 
+coordinates (parallel velocity and magnetic moment). Understanding and controlling the turbulence that degrades plasma confinement is crucial for the success of 
+next-generation fusion reactors like ITER.
+
+
+
 \begin{itemize}
   \item I/O is almost important as computation in HPC.
   \item As supercomputer advance, computational power increases faster thant storage bandwidth, making I/O 
 operation a bottleneck.
-  \begin{itemize}
-    \item Find an exemple as Luan's example with ratio between computation and I/O perfs
-    \item \url{https://arxiv.org/pdf/2501.00203} <- article about difference of treatment between computation and I/O in HPC
-  \end{itemize}
+
   \begin{center}
-    \includegraphics[width=0.4\textwidth]{figures/io_per_flop.pdf}
+    \includegraphics[width=0.6\textwidth]{figures/storage_trend.png}
   \end{center}
-  ratio between computation TFlops and I/O GB/s for top 500 supercomputer from 2020 to 2025.
+  ratio between computation TFlops and I/O GB/s for top 500 supercomputer from 2010 to 2025.
 
   \item Large-Scale simulations generate unprecedented volumes of datas, much be stored and retrieved efficiently.
   \begin{itemize}
@@ -160,10 +183,15 @@ operation a bottleneck.
   \item This work aims to identify optimal configurations and provide actionable recommendations to reduce checkpointing overhead in future Gysela production runs.
 \end{itemize}
 
-\section{Background}
+\section{Context} % Part of the report where i talk about Inria, TADaaM, NumPex & Exa-Dost
 Text for the second section. This is closely related to the text in
-section \ref{sec1} on page \pageref{sec1}. \newpage
+section \ref{sec1} on page \pageref{sec1}.
 
+\section{Background}
+
+\section{Experimental Set-up}
+
+\newpage
 % Bibliography style (none used in this template, but ensures \bibstyle is set)
 \bibliographystyle{plain}
 
