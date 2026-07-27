@@ -129,7 +129,7 @@ bottleneck for modern exascale systems.
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.6\textwidth]{figures/io_per_flop.pdf}
+  \includegraphics[width=0.5\textwidth]{figures/io_per_flop.pdf}
   \caption{Compute-to-I/O performance gap in top 500 supercomputers (2000--2025).\\
   The ratio of computational throughput to storage bandwidth has grown by an order of indicating that I/O is increasingly the limiting factor.}
   \label{fig:io_per_flop}
@@ -141,54 +141,47 @@ Gysela is a 5D gyrokinetic simulation code developed by the CEA (Commissariat à
 in tokamaks by solving the Vlasov equation in a five-dimensional phase space: three spatial coordinates (minor radius and two toroidal angles) and two velocity-space 
 coordinates (parallel velocity and magnetic moment). Understanding and controlling the turbulence that degrades plasma confinement is crucial for the success of 
 next-generation fusion reactors like ITER.
+Production Gysela simulations run thousands of processes and generate massive checkpoint datasets. Due to the long execution times (ranging
+from days to weeks on large allocations) and the constant risk of hardware failures or job time limits on production systems, Gysela relies on
+periodic checkpointing saving the complete simulation state at regular intervals to enable clean restarts without recomputing from the beginning.
+The checkpointing writing process is synchronous: All MPI ranks pause computation and collectively write their portion of the 5D state to persistent storage.
+During this phase, expensive supercomputer resources sit idle, wasting valuable compute hours. In production environments, checkpoints write time suffers from
+significant variability-sometimes exceeding the mean by a factor of 3 or more-due to PFS contention with other jobs and variable network behavior. This unpredictability
+difficult to accurately predict job completion times and optimize checkpoint frequency.
+Optimizing checkpoint I/O requires simultaneous attention to two distinct challenges: tunin parallel file system configuration parameters (e.g., stripe count, stripe size and OST allocation) detailled in section \ref{sec:background}
+and selecting an appropriate I/O strategy (how application data is organized and written to the PFS).
+To facilitate rapid, reproducible experimentation, we use {\tt gys\_io}, a lightweight mini-application that replicates Gysela's 5D checkpoint pattern without the computational burden. 
+This mini-app enables benchmarking to complete in seconds per configuration rather than hours, allowing systematic parameter sweeps across hundreds of experiments. Importantly, {\tt gys\_io}
+accepts the same configuration files as Gysela, ensuring that benchmark results directly inform production deployments.
 
 
-
-\begin{itemize}
-  \item I/O is almost important as computation in HPC.
-  \item As supercomputer advance, computational power increases faster thant storage bandwidth, making I/O 
-operation a bottleneck.
-
-  \begin{center}
-    \includegraphics[width=0.6\textwidth]{figures/storage_trend.png}
-  \end{center}
-  ratio between computation TFlops and I/O GB/s for top 500 supercomputer from 2010 to 2025.
-
-  \item Large-Scale simulations generate unprecedented volumes of datas, much be stored and retrieved efficiently.
-  \begin{itemize}
-    \item Example like dataset for AI training (ChatGPT), weather or any kind of simulation
-  \end{itemize}
-  
-  \item I/O in parallel file system is a complex problem due to concurrent access, contention, and data distribution.
-  \item Gysela is a 5D gyrokinetic simulation code developed by CEA for nuclear fusion research (plasma turbulence in tokamaks).
-  \item Run on large amount of nodes and generate massives datasets
-  \begin{itemize}
-    \item Example of dataset size for Gysela
-    \item -> Ask Virginie about diverses size for Gysela prod
-  \end{itemize}
-
-  \item Due to long execution time and risk of hardware failure, Gysela relies on periodic (every X [ask virginie] iterations) checkpointing to save its state and allow clean restart
-  \item Writing checkpoint is synchronus and blocks the simulation progress, wasting expensive resources.
-  \item On production, checkpoint write time suffer from high variability sometimes up to x3 slower than average.
-  \item We must optimize both the PFS configuration and the I/O strategy
-  \item We use gys\_io, a lightweight mini-application that replicates Gysela's 5D grid checkpointing pattern.
-  \begin{itemize}
-    \item Explain more how gys\_io works
-  \end{itemize}
-  \item We leverage PDI (Parallel Data Interface) to implement different I/O strategies: Single Shared File (SSF), Subfiling, and File Per Process (FPP) by modifing the configuration file in yaml,
-  for flexible execution and neither code modification and compilation.
-  \item We submits tests and evaluate the performances with IOPS, a benchmarking tool developped by TADaaM team at Inria Bordeaux.
-  \item Our eval is conducted on different cluster with different PFS : Plafrim (with BeegFS) and Adastra (with Lustre). This allow us to test different PFS configuration
-  and analyze the impact of striping on each I/O strategy.
-  \item This work aims to identify optimal configurations and provide actionable recommendations to reduce checkpointing overhead in future Gysela production runs.
-\end{itemize}
 
 \section{Context} % Part of the report where i talk about Inria, TADaaM, NumPex & Exa-Dost
-Text for the second section. This is closely related to the text in
+
+\subsection{Inria}
+
+\subsection{TADaaM}
+
+\subsection{NumPex}
+
+\subsection{Exa-Dost}
+
 section \ref{sec1} on page \pageref{sec1}.
 
-\section{Background}
 
+
+%% Dans une autre section ?
+We implement three distinct I/O strategies Single Shared File (SSF), Subfiling and File Per Process (FPP) using PDI (Parallel Data Interface), a middleware layer developped by {\tt Maison de la simulation} team that
+decouple I/O strategy from application code. Each strategy is selected by modifying a YAML configuration file; no code recompilation is required. This flexibility allows rapid evaluation of strategies
+and enables production systems to adapt I/O policies without code maintenance overhead.
+
+
+
+
+
+
+\section{Background}
+\label{sec:background}
 \section{Experimental Set-up}
 
 \newpage
