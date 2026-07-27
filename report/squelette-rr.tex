@@ -116,7 +116,7 @@ to significantly reduce checkpointing overhead in future Gysela production runs.
 \tableofcontents \newpage
 
 \section{Introduction}
-\label{sec1}
+\label{sec:intro}
 
 In modern High-Performance Computing (HPC) systems, Input/Output (I/O) performance has become nearly critical as computational
 power itself. As supercomputer advance toward exascale capabilities, computational throughput has increased exponentially, yet
@@ -152,21 +152,28 @@ Optimizing checkpoint I/O requires simultaneous attention to two distinct challe
 and selecting an appropriate I/O strategy (how application data is organized and written to the PFS).
 To facilitate rapid, reproducible experimentation, we use {\tt gys\_io}, a lightweight mini-application that replicates Gysela's 5D checkpoint pattern without the computational burden. 
 This mini-app enables benchmarking to complete in seconds per configuration rather than hours, allowing systematic parameter sweeps across hundreds of experiments. Importantly, {\tt gys\_io}
-accepts the same configuration files as Gysela, ensuring that benchmark results directly inform production deployments.
-
+accepts the same configuration files as Gysela, ensuring that benchmark results directly inform production deployments. Optimizing checkpoint I/O requires tuning both parallel file system configuration parameters 
+and selecting an appropriate I/O strategy. This work evaluates three complementary approaches and identifies the most effective configurations for Gysela.
 
 
 \section{Context} % Part of the report where i talk about Inria, TADaaM, NumPex & Exa-Dost
+\label{sec:context}
 
-\subsection{Inria}
+This work is conducted at Inria, the French National Institute for Research in Digital Science and Technology. Inria is internationally recognized for its major contributions to high-performance computing, artificial intelligence,
+and computer networks. With ten research centers across France and over 3,500 researchers, engineers, and administrative staff, Inria leads fundamental and applied research in computer science and mathematics with a focus on societal impact.
 
-\subsection{TADaaM}
+This intership is part of the TADaaM team (Topology-Aware system-scale Data management for high-performance computing) at the Inria Bordeaux research center. TADaaM is dedicated to designing a comprehensive service layer for HPC systems, enabling
+applications to express their resource requirements and allowing the system to dynamically optimize execution at scale. The team's work bridges application needs and system capabilities,
+ensuring efficient utilization of large-scale computing resources.
 
-\subsection{NumPex}
+This research is part of the NumPex project, a European HPC research initiative dedicated to preparing Europe's scientific computing ecosystem for the exascale era. NumPex brings together leading research institutions, HPC centers, and industry
+paterns to develop and validate technologies for extreme-scale simulation and data processing. This work contributes to Exadost, a NumPex work package focused on optimizing I/O performance and data management strategies for exascale applications.
 
-\subsection{Exa-Dost}
+The Gysela application studied in this work is developed by the CEA (Commissariat à l'énergie Atomique et aux énergies alternatives), France's atomic and alternative energies commission. Gysela is used by CEA researchers to study plasma turbulence in
+fusion reactors, making I/O optimization critical for advacing fusion energy research on future exascale systems.
 
-section \ref{sec1} on page \pageref{sec1}.
+
+section \ref{sec:intro} on page \pageref{sec:intro}.
 
 
 
