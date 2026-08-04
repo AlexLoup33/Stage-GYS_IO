@@ -25,6 +25,9 @@
 \usepackage{hyperref}
 \usepackage{bookmark} % improve outline handling, avoids rerun warnings
 \usepackage[norule]{footmisc} % pour supprimer le filet des notes
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning}
+
 %%\usepackage[frenchb]{babel} % optionnel
 \RRNo{XXXX}
 %% \RTNo{0703}
@@ -177,18 +180,106 @@ section \ref{sec:intro} on page \pageref{sec:intro}.
 
 
 
-%% Dans une autre section ?
+
+
+\section{Background}
+\label{sec:background}
+
+\subsection{Parralel File System}
+
+\begin{itemize}
+  \item Difference between File System and Parallel File System is striping concept
+  \item Multiple PFS exist : BeegFS, Lustre, ...
+  
+  \item OST stand for Object Storage Target
+  \item OST is a physical and logical unit measure represented by hard disk or group of disk
+  \item Allows data to be partitioned across multiple storage systems
+
+  \item Striping is a data distribution technique
+  \item Cut datas into multiple chunk called stripe
+  \label{ref:stripe_size}
+  \item Those chunks are written on OSTs
+  
+  \item Main objective of PFS is to improve bandwidth usage
+\end{itemize}
+
+\subsection{Write Strategy}
+
 We implement three distinct I/O strategies Single Shared File (SSF), Subfiling and File Per Process (FPP) using PDI (Parallel Data Interface), a middleware layer developped by {\tt Maison de la simulation} team that
 decouple I/O strategy from application code. Each strategy is selected by modifying a YAML configuration file; no code recompilation is required. This flexibility allows rapid evaluation of strategies
 and enables production systems to adapt I/O policies without code maintenance overhead.
 
 
+\subsubsection{Single Shared File}
 
+\begin{itemize}
+  \item Every processes write on a same file
+  \item Two-Phase I/O
+  \item First Data aggregation and then send to PFS
+\end{itemize}
 
+\begin{figure}[h]
+  \centering
+  \begin{minipage}{0.7\textwidth}
+    \centering
+    \input{figures/ssf_background.tex}
+  \end{minipage}
+  \caption{Illustration of the Single Shared File (SSF) strategy.}
+  \label{fig:ssf_background}
+\end{figure}
 
+\subsubsection{Subfiling}
 
-\section{Background}
-\label{sec:background}
+\begin{itemize}
+  \item Processes's data are aggregated into a smaller number of files called subfiles
+  \item Each subfile is written to the PFS by a single process (IO Concentrator)
+  \item Number of subfiles is a tunable parameter that can be adjusted to optimize performance based on each applications.
+  \item Writing phase of subfiles is done by chunks of data called stripes size \ref{ref:stripe_size} that are written in parallel on the PFS
+  \item Subfiling strategy aims to reduce contention on the PFS by decreasing the number of concurrence write operations.
+\end{itemize}
+
+\begin{figure}[h]
+  \centering
+  \begin{minipage}{0.7\textwidth}
+    \centering
+    \input{figures/subfiling_background.tex}
+  \end{minipage}
+  \caption{Illustration of the Subfiling strategy.}
+  \label{fig:subfiling_background}
+\end{figure}
+
+\subsubsection{File Per Process}
+
+\begin{itemize}
+  \item Each process writes its own file on the PFS
+  \item This strategy is simple to implement and does not require any data aggregation or coordination between
+  \item However, it can lead to a large number of small files, which may cause performance issues on some PFS due to metadata overhead and file system limitations.
+\end{itemize}
+
+\begin{figure}[h]
+  \centering
+  \begin{minipage}{0.7\textwidth}
+    \centering
+    \input{figures/fpp_background.tex}
+  \end{minipage}
+  \caption{Illustration of the File Per Process (FPP) strategy.}
+  \label{fig:fpp_background}
+\end{figure}
+
+\subsection{Software Stacks \& Tools}
+
+\subsubsection{Gysela Mini App IO}
+
+\begin{itemize}
+  \item Gysela is 
+\end{itemize}
+
+\subsubsection{PDI}
+
+\subsubsection{IOPS}
+
+\subsubsection{TOTO}
+
 \section{Experimental Set-up}
 
 \newpage

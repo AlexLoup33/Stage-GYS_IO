@@ -1,4 +1,14 @@
 \contentsline {section}{\numberline {1}Introduction}{4}{section.1}%
 \contentsline {section}{\numberline {2}Context}{5}{section.2}%
 \contentsline {section}{\numberline {3}Background}{5}{section.3}%
-\contentsline {section}{\numberline {4}Experimental Set-up}{5}{section.4}%
+\contentsline {subsection}{\numberline {3.1}Parralel File System}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Write Strategy}{6}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Single Shared File}{6}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Subfiling}{6}{subsubsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.3}File Per Process}{7}{subsubsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.3}Software Stacks \& Tools}{7}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Gysela Mini App IO}{7}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}PDI}{7}{subsubsection.3.3.2}%
+\contentsline {subsubsection}{\numberline {3.3.3}IOPS}{7}{subsubsection.3.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.4}TOTO}{7}{subsubsection.3.3.4}%
+\contentsline {section}{\numberline {4}Experimental Set-up}{7}{section.4}%
