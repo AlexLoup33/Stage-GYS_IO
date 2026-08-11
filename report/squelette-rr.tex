@@ -1,292 +1,256 @@
 %%
-%% This is file `squelette-rr.tex',
-%% generated with the docstrip utility.
+%% Rapport Technique Inria - Gysela I/O Optimization
 %%
-%% The original source files were:
-%%
-%% RR.dtx  (with options: `sample')
-%% ********************************************************************
-%% Copyright (C) 1997-1999 2004 2006-2011 INRIA/APICS/MARELLE by Jose' Grimm
-%% This file may be distributed and/or modified under the
-%% conditions of the LaTeX Project Public License, either version 1.3
-%% of this license or (at your option) any later version.
-%% The latest version of this license is in
-%%    http://www.latex-project.org/lppl.txt
-%% and version 1.3 or later is part of all distributions of LaTeX
-%% version 2003/12/01 or later.
-%% An archive of the software can be found at
-%%    ftp://ftp-sop.inria.fr/marelle/RR-INRIA
-
 \documentclass[twoside]{article}
 \usepackage[a4paper]{geometry}
-\usepackage[utf8]{inputenc} % use UTF-8 input encoding
-\usepackage[T1]{fontenc} % ou \usepackage[OT1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{RR}
 \usepackage{hyperref}
-\usepackage{bookmark} % improve outline handling, avoids rerun warnings
-\usepackage[norule]{footmisc} % pour supprimer le filet des notes
+\usepackage{bookmark}
+\usepackage[norule]{footmisc}
 \usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{graphicx}
+\usepackage{amsmath}
 \usetikzlibrary{shapes,arrows,positioning}
+\pgfplotsset{compat=1.18}
 
-%%\usepackage[frenchb]{babel} % optionnel
 \RRNo{XXXX}
-%% \RTNo{0703}
-%%
-%% date de publication du rapport
-\RRdate{MONTH YEAR}
-%%
-%% Cas d'une version deux
-%% \RRversion{2}
-%% date de publication de la version 2
-%% \RRdater{November 2008}
-%%\RRversion{2\thanks{la note explicative}}
-\RRdater{MONTH YEAR} % date de revision du rapport
-\RRauthor{% les auteurs
- % Premier auteur, avec une note
-Alexandre Lou-Poueyou\thanks{Computer Science Master's Degree Student at University of Bordeaux - Intern at TADaaM team}%
- % \and entre chaque auteur s'il y en a plusieurs
-  \and
-Francieli Boito\thanks{Associate Professor at University of Bordeaux \& permanent researcher at TADaaM team}%
- % r\'ef\'erence \`a la note partag\'ee
- % liste longue pour tests de mise en page
-\and Meline Trochon\thanks{PhD stutent at TADaaM team} \and Luan Teylo \thanks{Permanent researcher at TADaaM team}}
-%% Ceci apparait sur chaque page paire.
-\authorhead{Alexandre \& Francieli \& others}
-%% titre francais long
-\RRtitle{Exemple de document\\
- utilisant le style\\rapport de recherche\\Inria}
-%% English title
-\RRetitle{Improving I/O Performances of HPC Application Gysela}
-%%
-\titlehead{Improving I/O performances of HPC Application Gysela}
-%%
-%\RRnote{This is a note}
-%\RRnote{This is a second note}
-%%
-\RRresume{Ce document montre comment utiliser le style RR.sty.
-Pour en savoir plus, consulter le fichier RR.dvi ou RR.pdf.
-D\'efinissez toujours les commandes avant utilisation.
+\RRdate{August 2026}
+\RRdater{August 2026}
+
+\RRauthor{%
+Alexandre Lou-Poueyou\thanks{Computer Science Master's Student at University of Bordeaux -- Intern at TADaaM team, Inria Bordeaux}%
+\and
+Francieli Boito\thanks{Associate Professor at University of Bordeaux \& Permanent Researcher in TADaaM team, Inria Bordeaux}%
+\and
+Méline Trochon\thanks{PhD Student in TADaaM team, Inria Bordeaux}%
+\and
+Luan Teylo\thanks{Permanent Researcher in TADaaM team, Inria Bordeaux}%
 }
-\RRabstract{
-In modern High-Performance Computing (HPC) systems, Input/Output (I/O) performance 
-is a major bottleneck for large-scale scientific simulations. As computational power 
-and data volumes scale rapidly, optimizing I/O workflows becomes critical to efficiently 
-leverage supercomputing resources. Scientific applications heavily rely on Parallel File 
-Systems (PFS) to access vast datasets concurrently. However, achieved performance is highly 
-sensitive to PFS configurations, high-level I/O strategies, and application-specific access patterns. 
-Understanding and tuning the interactions between these layers is crucial for maximizing global simulation throughput.\\
-This work focuses on optimizing the checkpointing performance of Gysela, a 5D gyrokinetic simulation code 
-developed by the CEA for nuclear fusion research. Gysela generates massive datasets and relies on periodic 
-checkpointing for fault tolerance and job restartability. Using gys\_io, a lightweight mini-app replicating 
-Gysela’s parallel I/O patterns, we systematically evaluate and compare different parallel I/O strategies—namely 
-Single Shared File (SSF), Subfiling, and File Per Process (FPP)—alongside key PFS configuration parameters. 
-Our experiments, conducted on diverses clusters, analyze the performance trade-offs of these strategies 
-and parameters under various scaling conditions. The results identify optimal parallel configurations, 
-clarify the impact of PFS striping on each I/O strategy, and provide actionable optimization recommendations 
-to significantly reduce checkpointing overhead in future Gysela production runs.
+
+\authorhead{A. Lou-Poueyou, F. Boito, M. Trochon \& L. Teylo}
+
+\RRtitle{Amélioration des performances d'écriture des checkpoints pour l'application HPC Gysela}
+\RRetitle{Improving Checkpointing I/O Performances of the Gysela HPC Application}
+
+\titlehead{Improving I/O Performances of HPC Application Gysela}
+
+\RRresume{%
+Ce rapport technique présente une étude approfondie visant à optimiser les performances d'I/O lors des phases de sauvegarde (checkpointing) du code de simulation gyrocinétique 5D Gysela, développé par le CEA. En utilisant le mini-app \texttt{gys\_io}, nous évaluons et comparons trois stratégies d'écriture parallèle (\textit{Single Shared File}, \textit{Subfiling} et \textit{File Per Process}) associées aux paramètres de configuration du système de fichiers parallèle (PFS) BeeGFS sur la plateforme Plafrim. Nos résultats mettent en évidence l'impact critique du nombre d'OST sur la bande passante, déterminent le nombre optimal de subfiles et démontrent la grande efficacité de la stratégie \textit{File Per Process} aux échelles étudiées.
 }
-\RRkeyword{HPC, Parallel I/O, Performances Tuning, Parallel File Systems}
-%%
-%% \RRprojet{Apics}  % cas d'un seul projet
+
+\RRabstract{%
+In modern High-Performance Computing (HPC) systems, Input/Output (I/O) performance represents a critical bottleneck for large-scale scientific simulations. As computational power scales towards exascale, storage bandwidth has not kept pace, creating a significant compute-to-I/O performance gap. Saving application states through periodic checkpointing is essential for fault tolerance, yet synchronous checkpoint writing halts computation and wastes expensive CPU/GPU hours.
+
+This work focuses on optimizing the checkpointing performance of Gysela, a 5D gyrokinetic simulation code developed by the CEA for nuclear fusion research. Gysela generates massive datasets and relies on periodic checkpointing for execution restartability. Using \texttt{gys\_io}, a lightweight mini-application replicating Gysela's parallel 5D I/O patterns, we systematically evaluate three parallel I/O strategies—Single Shared File (SSF), Subfiling, and File Per Process (FPP)—alongside Parallel File System (PFS) striping configurations on clusters.
+%Our experimental evaluation highlights a $\sim 5\times$ performance improvement when scaling Object Storage Targets (OSTs) from 1 to 8, identifies the optimal subfile configuration matching the physical OST count, and demonstrates that File Per Process achieves superior write bandwidth across evaluated node scales. Finally, we outline practical optimization guidelines and lay out future perspectives on tier-0 supercomputers.
+}
+
+\RRkeyword{HPC, Parallel I/O, Performance Tuning, Parallel File Systems}
+
 \RRprojets{TADaaM}
-%%
-%% \URLorraine % pour ceux qui sont \`a l'est
-%% \URRennes  % pour ceux qui sont \`a l'ouest
-%% \URRhoneAlpes % pour ceux qui sont dans les montagnes
-%% \URRocq % pour ceux qui sont au centre de la France
-%% \URFuturs % pour ceux qui sont dans le virtuel
-%% \URSophia % pour ceux qui sont au Sud.
-%%
-%% \RCBordeaux % Centre Inria de l'Université de Bordeaux
-%% \RCGrenoble % Centre Inria de l'Université de Grenoble Alpes
-%% \RCLille % Centre Inria de l'Université de Lille
-%% \RCLyon % Centre Inria de Lyon
-%% \RCNancy % Centre Inria de l'Université de Lorraine
-%% \RCParis % Centre Inria de Paris
-%% \RCRennes % Centre Inria de l'Université de Rennes 
-%% \RCSaclay % Centre Inria de Saclay
-%% \RCSophia % Centre Inria d'Université Côte d'Azur
-
-
 \RCBordeaux
 
-%%
 \begin{document}
-%%
-%\makeRR   % cas d'un rapport de recherche
-\makeRT % cas d'un rapport technique.
-%% a partir d'ici, chacun fait comme il le souhaite
-\tableofcontents \newpage
 
+\makeRT % Rapport Technique Inria
+\tableofcontents 
+\newpage
+
+% ==============================================================================
 \section{Introduction}
 \label{sec:intro}
+% ==============================================================================
 
-In modern High-Performance Computing (HPC) systems, Input/Output (I/O) performance has become nearly critical as computational
-power itself. As supercomputer advance toward exascale capabilities, computational throughput has increased exponentially, yet
-storage bandwidth has lagged behind. This growing imbalance creates a fundamental bottleneck: while modern processors achieve teraflop-
-scale performance, parallel file systems typically deliver only tens to hundreds of gigabytes per second in aggregate bandwidth.
-Figure \ref{fig:io_per_flop} quantifies this imbalance using data from major supercomputers from 2000 to 2025. The I/O bandwidth 
-per unit of compute (measured in GBps per PetaFlop) has declined from $\sim$300 GBps/PF on ASCI Red (2000) to only $\sim$6 GBps/PF 
-on Frontier (2023) a 50-fold degradation. This trend accelerated sharply after 2015, demonstrating that I/O has become the dominant 
-bottleneck for modern exascale systems.
+In modern High-Performance Computing (HPC) systems, Input/Output (I/O) throughput has become as critical to overall efficiency as computational capability itself. As supercomputing architectures advance toward and beyond the exascale threshold, computational throughput has increased exponentially. However, persistent storage bandwidth has lagged behind, widening the compute-to-I/O performance gap. 
+
+While modern processors achieve multi-petaflop or exaflop performance, parallel file systems typically deliver only hundreds of gigabytes to a few terabytes per second in aggregate write bandwidth. This growing imbalance creates a severe bottleneck: high-performance computing tasks spend a non-negligible fraction of their allocated runtime waiting for data transfers to complete. The compute-to-I/O ratio (measured in GB/s per PetaFlop) has degraded by more than an order of magnitude over the past two decades.
+
+% Implemented the figure of ratio between compute \& IO
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.5\textwidth]{figures/io_per_flop.pdf}
-  \caption{Compute-to-I/O performance gap in top 500 supercomputers (2000--2025).\\
-  The ratio of computational throughput to storage bandwidth has grown by an order of indicating that I/O is increasingly the limiting factor.}
+  \includegraphics[width=0.55\textwidth]{figures/io_per_flop.pdf}
+  \caption{Compute-to-I/O performance gap in Top500 supercomputers (2000--2025). The ratio of storage bandwidth per unit of compute has degraded by more than an order of magnitude.}
   \label{fig:io_per_flop}
 \end{figure}
 
-Large-scale scientific simulations generate massive data volumes requiring efficient I/O management. On parallel file systems, thousands of processes 
-must coordinate concurrent access to shared storage while contending for limited bandwidth.
-Gysela is a 5D gyrokinetic simulation code developed by the CEA (Commissariat à l'\'energie Atomique) for nuclear fusion research. It models plasma turbulence 
-in tokamaks by solving the Vlasov equation in a five-dimensional phase space: three spatial coordinates (minor radius and two toroidal angles) and two velocity-space 
-coordinates (parallel velocity and magnetic moment). Understanding and controlling the turbulence that degrades plasma confinement is crucial for the success of 
-next-generation fusion reactors like ITER.
-Production Gysela simulations run thousands of processes and generate massive checkpoint datasets. Due to the long execution times (ranging
-from days to weeks on large allocations) and the constant risk of hardware failures or job time limits on production systems, Gysela relies on
-periodic checkpointing saving the complete simulation state at regular intervals to enable clean restarts without recomputing from the beginning.
-The checkpointing writing process is synchronous: All MPI ranks pause computation and collectively write their portion of the 5D state to persistent storage.
-During this phase, expensive supercomputer resources sit idle, wasting valuable compute hours. In production environments, checkpoints write time suffers from
-significant variability-sometimes exceeding the mean by a factor of 3 or more-due to PFS contention with other jobs and variable network behavior. This unpredictability
-difficult to accurately predict job completion times and optimize checkpoint frequency.
-Optimizing checkpoint I/O requires simultaneous attention to two distinct challenges: tunin parallel file system configuration parameters (e.g., stripe count, stripe size and OST allocation) detailled in section \ref{sec:background}
-and selecting an appropriate I/O strategy (how application data is organized and written to the PFS).
-To facilitate rapid, reproducible experimentation, we use {\tt gys\_io}, a lightweight mini-application that replicates Gysela's 5D checkpoint pattern without the computational burden. 
-This mini-app enables benchmarking to complete in seconds per configuration rather than hours, allowing systematic parameter sweeps across hundreds of experiments. Importantly, {\tt gys\_io}
-accepts the same configuration files as Gysela, ensuring that benchmark results directly inform production deployments. Optimizing checkpoint I/O requires tuning both parallel file system configuration parameters 
-and selecting an appropriate I/O strategy. This work evaluates three complementary approaches and identifies the most effective configurations for Gysela.
+Large-scale scientific simulations generate massive volumes of data requiring efficient parallel management. On shared Parallel File Systems (PFS), thousands of concurrent processes must coordinate access to shared storage arrays while contending for network link bandwidth and storage controller resources. 
 
+A prominent example is Gysela, a 5D gyrokinetic simulation code developed by the CEA (\textit{Commissariat à l'Énergie Atomique et aux Énergies Alternatives}) for nuclear fusion research. Gysela models plasma turbulence in magnetic confinement devices (tokamaks) by solving the 5D Vlasov-Poisson system across three spatial coordinates (minor radius $r$, poloidal angle $\theta$, toroidal angle $\varphi$) and two velocity-space coordinates (parallel velocity $v_\parallel$, magnetic moment $\mu$). Understanding and mitigating plasma turbulence is crucial for maximizing thermal confinement in next-generation fusion reactors such as ITER.
 
-\section{Context} % Part of the report where i talk about Inria, TADaaM, NumPex & Exa-Dost
+Because production Gysela simulations execute across hundreds to thousands of computing nodes over extended periods (days to weeks), they rely on periodic checkpointing for fault tolerance and job restartability. The checkpointing procedure is synchronous: all parallel processes pause numerical integration, aggregate their local state vectors, and flush the 5D distribution function to persistent storage. During this phase, compute resources remain idle. Moreover, in shared production environments, checkpoint write times exhibit high variability—sometimes exceeding median write durations by a factor of 3—due to concurrent I/O contention from uncoordinated tenant jobs.
+
+Optimizing checkpoint I/O performance requires a coordinated approach across two complementary layers:
+\begin{enumerate}
+    \item Parallel File System (PFS) Configuration: Adjusting low-level layout parameters, such as striping count (number of storage targets) and stripe size.
+    \item High-Level I/O Strategies: Selecting how application data structures are mapped, aggregated, and formatted when dispatched to storage (e.g., Single Shared File, Subfiling, or File Per Process).
+\end{enumerate}
+
+To enable rapid, reproducible experimentation without incurring the massive computational cost of full plasma physics simulations, we employ \texttt{gys\_io}, a dedicated mini-application that faithfully reproduces Gysela's 5D checkpoint I/O access pattern. In this report, we evaluate the impact of PFS parameters and high-level write strategies, analyze scaling behaviors on the Plafrim benchmark platform, and formulate actionable deployment recommendations for Gysela production runs.
+
+% ==============================================================================
+\section{Institutional \& Project Context}
 \label{sec:context}
+% ==============================================================================
 
-This work is conducted at Inria, the French National Institute for Research in Digital Science and Technology. Inria is internationally recognized for its major contributions to high-performance computing, artificial intelligence,
-and computer networks. With ten research centers across France and over 3,500 researchers, engineers, and administrative staff, Inria leads fundamental and applied research in computer science and mathematics with a focus on societal impact.
+This work was conducted as part of a Master's research internship at Inria (the French National Institute for Research in Digital Science and Technology) within the TADaaM research team at the Inria Centre at the University of Bordeaux. TADaaM (\textit{Topology-Aware system-scale Data management for high-performance computing}) specializes in designing system software and data management layers that bridge the gap between application-level requirements and complex hardware topologies.
 
-This intership is part of the TADaaM team (Topology-Aware system-scale Data management for high-performance computing) at the Inria Bordeaux research center. TADaaM is dedicated to designing a comprehensive service layer for HPC systems, enabling
-applications to express their resource requirements and allowing the system to dynamically optimize execution at scale. The team's work bridges application needs and system capabilities,
-ensuring efficient utilization of large-scale computing resources.
+This research contributes directly to the NumPex program, a major French national initiative designed to build the software ecosystem for exascale supercomputing. Specifically, the study falls under the Exa-DOST work package, which focuses on developing advanced I/O optimization strategies, dynamic data management middlewares, and workflow scheduling tools for extreme-scale applications.
 
-This research is part of the NumPex project, a European HPC research initiative dedicated to preparing Europe's scientific computing ecosystem for the exascale era. NumPex brings together leading research institutions, HPC centers, and industry
-paterns to develop and validate technologies for extreme-scale simulation and data processing. This work contributes to Exadost, a NumPex work package focused on optimizing I/O performance and data management strategies for exascale applications.
+The target application, Gysela, is maintained and advanced by researchers at CEA. Collaborative efforts between Inria TADaaM and CEA aim to prepare Gysela's I/O substrate for upcoming European exascale supercomputers (such as Alice Recoque in France).
 
-The Gysela application studied in this work is developed by the CEA (Commissariat à l'énergie Atomique et aux énergies alternatives), France's atomic and alternative energies commission. Gysela is used by CEA researchers to study plasma turbulence in
-fusion reactors, making I/O optimization critical for advacing fusion energy research on future exascale systems.
-
-
-section \ref{sec:intro} on page \pageref{sec:intro}.
-
-
-
-
-
-\section{Background}
+% ==============================================================================
+\section{Background \& High-Level Write Strategies}
 \label{sec:background}
+% ==============================================================================
 
-\subsection{Parralel File System}
+\subsection{Parallel File Systems and Data Striping}
+\label{sec:pfs}
 
-\begin{itemize}
-  \item Difference between File System and Parallel File System is striping concept
-  \item Multiple PFS exist : BeegFS, Lustre, ...
-  
-  \item OST stand for Object Storage Target
-  \item OST is a physical and logical unit measure represented by hard disk or group of disk
-  \item Allows data to be partitioned across multiple storage systems
+Traditional file systems rely on single storage controllers, which creates a severe bottleneck when thousands of parallel MPI ranks attempt simultaneous file access. Parallel File Systems (PFS)—such as Lustre, BeeGFS, and IBM Spectrum Scale (GPFS)—bypass this bottleneck by partitioning files across multiple independent storage devices via data striping.
 
-  \item Striping is a data distribution technique
-  \item Cut datas into multiple chunk called stripe
-  \label{ref:stripe_size}
-  \item Those chunks are written on OSTs
-  
-  \item Main objective of PFS is to improve bandwidth usage
-\end{itemize}
+In systems such as BeeGFS and Lustre, storage capacity is divided into logical entities called Object Storage Targets (OSTs). An OST represents a dedicated physical storage unit (e.g., a RAID array or NVMe volume) managed by an Object Storage Server (OSS). Metadata servers (MDS) maintain directory structures and file layouts, while OSTs handle actual data payload transfers.
 
-\subsection{Write Strategy}
+Data striping partitions a logical file stream into contiguous blocks of size $S_{\text{stripe}}$ (Stripe Size). These blocks are distributed in a round-robin sequence across $N_{\text{OST}}$ targets (Stripe Count or OST Count). For example, with $N_{\text{OST}} = 4$ and $S_{\text{stripe}} = 1$~MB, the first megabyte is written to OST~0, the second to OST~1, and so on. Striping allows applications to aggregate the physical bandwidth of multiple storage devices, ideally achieving an $N_{\text{OST}}$-fold increase in overall write throughput.
 
-We implement three distinct I/O strategies Single Shared File (SSF), Subfiling and File Per Process (FPP) using PDI (Parallel Data Interface), a middleware layer developped by {\tt Maison de la simulation} team that
-decouple I/O strategy from application code. Each strategy is selected by modifying a YAML configuration file; no code recompilation is required. This flexibility allows rapid evaluation of strategies
-and enables production systems to adapt I/O policies without code maintenance overhead.
+\subsection{Parallel Write Strategies}
+\label{sec:strategies}
 
+The layout of output files significantly impacts storage efficiency. In this study, we analyze three primary high-level I/O strategies, implemented via the Parallel Data Interface (PDI) middleware:
 
-\subsubsection{Single Shared File}
-
-\begin{itemize}
-  \item Every processes write on a same file
-  \item Two-Phase I/O
-  \item First Data aggregation and then send to PFS
-\end{itemize}
+\subsubsection{Single Shared File (SSF)}
+In the Single Shared File approach, all MPI processes concurrently write their local data slices into a single unified file on the PFS (Figure~\ref{fig:ssf_schema}). Standard libraries (such as HDF5 or MPI-IO) employ two-phase I/O to aggregate non-contiguous memory layouts into large, contiguous file offsets before issuing collective storage calls. While SSF simplifies dataset management by producing a single output file, it can suffer from locking contention on storage targets when rank counts scale up.
 
 \begin{figure}[h]
   \centering
-  \begin{minipage}{0.7\textwidth}
-    \centering
-    \input{figures/ssf_background.tex}
-  \end{minipage}
-  \caption{Illustration of the Single Shared File (SSF) strategy.}
-  \label{fig:ssf_background}
+  \begin{tikzpicture}[node distance=1.2cm, >=stealth, font=\small]
+    \node (r0) [draw, fill=blue!10, rounded corners] {Rank 0};
+    \node (r1) [draw, fill=blue!10, rounded corners, right=0.5cm of r0] {Rank 1};
+    \node (dots) [right=0.3cm of r1] {$\dots$};
+    \node (rn) [draw, fill=blue!10, rounded corners, right=0.3cm of dots] {Rank $N-1$};
+    
+    \node (mpio) [draw, fill=green!15, rectangle, dashed, inner sep=6pt, below=0.6cm of r1, xshift=0.5cm, text width=7.5cm, align=center] 
+      {MPI-IO / HDF5 Collective Layer\\ (Offset Calculation \& Data Aggregation)};
+      
+    \node (pfs) [draw, fill=red!15, rectangle, thick, below=0.6cm of mpio, text width=6cm, align=center] 
+      {Parallel File System (Single Shared File)};
+      
+    \draw[->, thick] (r0) -- (mpio);
+    \draw[->, thick] (r1) -- (mpio);
+    \draw[->, thick] (rn) -- (mpio);
+    \draw[->, ultra thick, blue!80!black] (mpio) -- node[right] {Single contiguous stream} (pfs);
+  \end{tikzpicture}
+  \caption{Single Shared File (SSF) strategy overview.}
+  \label{fig:ssf_schema}
 \end{figure}
 
 \subsubsection{Subfiling}
+Subfiling acts as an intermediate approach between SSF and individual file writes. MPI processes are partitioned into distinct sub-groups. Within each group, an assigned process—referred to as an I/O Concentrator (IOC) or aggregator—collects data from its peer ranks and writes it to a dedicated subfile (Figure~\ref{fig:subfiling_schema}). 
 
-\begin{itemize}
-  \item Processes's data are aggregated into a smaller number of files called subfiles
-  \item Each subfile is written to the PFS by a single process (IO Concentrator)
-  \item Number of subfiles is a tunable parameter that can be adjusted to optimize performance based on each applications.
-  \item Writing phase of subfiles is done by chunks of data called stripes size \ref{ref:stripe_size} that are written in parallel on the PFS
-  \item Subfiling strategy aims to reduce contention on the PFS by decreasing the number of concurrence write operations.
-\end{itemize}
+This reduces file system lock contention compared to SSF, while avoiding the metadata overload associated with generating thousands of individual files. The total number of generated subfiles ($N_{\text{subfiles}}$) is a tunable parameter.
 
 \begin{figure}[h]
   \centering
-  \begin{minipage}{0.7\textwidth}
-    \centering
-    \input{figures/subfiling_background.tex}
-  \end{minipage}
-  \caption{Illustration of the Subfiling strategy.}
-  \label{fig:subfiling_background}
+  \begin{tikzpicture}[node distance=1.0cm, >=stealth, font=\small]
+    \node (r0) [draw, fill=blue!10, rounded corners] {R0};
+    \node (r1) [draw, fill=blue!10, rounded corners, right=0.3cm of r0] {R1};
+    \node (r2) [draw, fill=blue!10, rounded corners, right=1.2cm of r1] {R2};
+    \node (r3) [draw, fill=blue!10, rounded corners, right=0.3cm of r2] {R3};
+    
+    \node (ioc1) [draw, fill=teal!20, rectangle, thick, below=0.5cm of r0, xshift=0.5cm] {IOC 1};
+    \node (ioc2) [draw, fill=teal!20, rectangle, thick, below=0.5cm of r2, xshift=0.5cm] {IOC 2};
+    
+    \node (f1) [draw, fill=red!15, rectangle, thick, below=0.6cm of ioc1] {Subfile 1};
+    \node (f2) [draw, fill=red!15, rectangle, thick, below=0.6cm of ioc2] {Subfile 2};
+    
+    \draw[->, thick] (r0) -- (ioc1);
+    \draw[->, thick] (r1) -- (ioc1);
+    \draw[->, thick] (r2) -- (ioc2);
+    \draw[->, thick] (r3) -- (ioc2);
+    
+    \draw[->, ultra thick, teal!80!black] (ioc1) -- (f1);
+    \draw[->, ultra thick, teal!80!black] (ioc2) -- (f2);
+  \end{tikzpicture}
+  \caption{Subfiling strategy overview with two I/O Concentrators (IOCs).}
+  \label{fig:subfiling_schema}
 \end{figure}
 
-\subsubsection{File Per Process}
-
-\begin{itemize}
-  \item Each process writes its own file on the PFS
-  \item This strategy is simple to implement and does not require any data aggregation or coordination between
-  \item However, it can lead to a large number of small files, which may cause performance issues on some PFS due to metadata overhead and file system limitations.
-\end{itemize}
+\subsubsection{File Per Process (FPP)}
+\label{fig:fpp_schema}
+In the File Per Process approach, every MPI process creates and writes its own separate file independently (Figure~\ref{fig:fpp_schema}). Because there is no inter-process communication or offset synchronization required, local write throughput can be very high. However, FPP generates $N_{\text{ranks}}$ separate files per checkpoint, which can strain metadata servers (MDS) at scale and complicate downstream post-processing or data management.
 
 \begin{figure}[h]
   \centering
-  \begin{minipage}{0.7\textwidth}
-    \centering
-    \input{figures/fpp_background.tex}
-  \end{minipage}
-  \caption{Illustration of the File Per Process (FPP) strategy.}
-  \label{fig:fpp_background}
+  \begin{tikzpicture}[node distance=1.0cm, >=stealth, font=\small]
+    \node (r0) [draw, fill=blue!10, rounded corners] {Rank 0};
+    \node (r1) [draw, fill=blue!10, rounded corners, right=0.5cm of r0] {Rank 1};
+    \node (r2) [draw, fill=blue!10, rounded corners, right=0.5cm of r1] {Rank 2};
+    \node (r3) [draw, fill=blue!10, rounded corners, right=0.5cm of r2] {Rank 3};
+    
+    \node (f0) [draw, fill=red!15, rectangle, below=0.7cm of r0] {file\_0};
+    \node (f1) [draw, fill=red!15, rectangle, below=0.7cm of r1] {file\_1};
+    \node (f2) [draw, fill=red!15, rectangle, below=0.7cm of r2] {file\_2};
+    \node (f3) [draw, fill=red!15, rectangle, below=0.7cm of r3] {file\_3};
+    
+    \draw[->, thick] (r0) -- (f0);
+    \draw[->, thick] (r1) -- (f1);
+    \draw[->, thick] (r2) -- (f2);
+    \draw[->, thick] (r3) -- (f3);
+  \end{tikzpicture}
+  \caption{File Per Process (FPP) strategy overview.}
 \end{figure}
 
-\subsection{Software Stacks \& Tools}
+\subsection{Software Stack and Tooling}
+\label{sec:tools}
 
-\subsubsection{Gysela Mini App IO}
+To evaluate these strategies, our experimental framework combines three key software components:
 
 \begin{itemize}
-  \item Gysela is 
+    \item \textbf{\texttt{gys\_io} Mini-App:} Developed by CEA, \texttt{gys\_io} is a lightweight benchmark proxy that replicates Gysela's exact 5D domain decomposition and checkpoint write calls while skipping computational physics routines. It reads Gysela configuration files directly, enabling fast, reproducible I/O benchmarks.
+    \item \textbf{Parallel Data Interface (PDI):} PDI decouples application code from underlying I/O libraries. By modifying external YAML configuration files, PDI allows switching between SSF, Subfiling, and FPP backends without recompiling the application binary.
+    \item \textbf{IOPS Benchmark Automation:} IOPS (\textit{I/O Performance Search / Suite}) automates parameter sweeps, manages SLURM batch job submission, and extracts execution metrics (such as \texttt{time\_write} and aggregate write bandwidth).
 \end{itemize}
 
-\subsubsection{PDI}
+% ==============================================================================
+\section{Experimental Setup}
+\label{sec:setup}
+% ==============================================================================
 
-\subsubsection{IOPS}
+\subsection{Hardware and Storage Infrastructure}
+Experiments were performed on the \textbf{Plafrim} cluster hosted at Inria Bordeaux. The tests were run on \textbf{Bora} compute nodes with the following specification:
+\begin{itemize}
+  \item \textbf{Nodes:} Dual-socket Intel Xeon Gold 6240 processors (36 physical cores per node, 192~GB RAM per node).
+  \item \textbf{Interconnect:} Omni-Path 100~Gb/s fabric.
+  \item \textbf{Parallel File System:} BeeGFS parallel file system backed by up to 8 active Object Storage Targets (OSTs).
+\end{itemize}
 
-\subsubsection{TOTO}
+\subsection{Benchmark Workload \& Evaluation Parameters}
+The test configuration used a standard 5D grid resolution matching representative Gysela runs:
+\begin{equation}
+    N_r \times N_\theta \times N_\varphi \times N_{v_\parallel} \times N_\mu = 128 \times 128 \times 64 \times 64 \times 64
+\end{equation}
+This setup yields a single-checkpoint memory footprint of approximately 34.35 GB.
 
-\section{Experimental Set-up}
+All benchmarks were submitted in exclusive node allocation mode with 8 tasks per node across process scales ranging from 16 MPI ranks (2 nodes) up to 128 MPI ranks (16 nodes). To account for background network and storage noise, each experimental point represents the average of 5 independent executions.
+
+Key measured metrics include:
+\begin{itemize}
+    \item \textbf{Write Time ($T_{\text{write}}$):} Effective time spent within the PDI write call in seconds.
+    \item \textbf{Aggregate Write Bandwidth ($BW_{\text{write}}$):} Defined as total dataset volume divided by write time, expressed in Gbit/s:
+    \begin{equation}
+        BW_{\text{write}} = \frac{\text{Data Volume (Bits)}}{T_{\text{write}} \text{ (s)}} \times 10^{-9}
+    \end{equation}
+\end{itemize}
+
+% ==============================================================================
+\section{Experimental Evaluation and Analysis}
+\label{sec:results}
+% ==============================================================================
 
 \newpage
-% Bibliography style (none used in this template, but ensures \bibstyle is set)
 \bibliographystyle{plain}
 
 \end{document}
-\endinput
-%%
-%% End of file `squelette-rr.tex'.
