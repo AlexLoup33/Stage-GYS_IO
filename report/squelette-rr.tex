@@ -216,36 +216,15 @@ To evaluate these strategies, our experimental framework combines three key soft
 \label{sec:setup}
 % ==============================================================================
 
+To evaluate the performance and scalability of our parallel I/O strategies, we conducted experiments across two different High-Performance Computing (HPC) clusters: a regional cluster used for initial setup and prototyping, and a national supercomputer used for larger-scale runs.
+
 \subsection{Hardware and Storage Infrastructure}
-Experiments were performed on the \textbf{Plafrim} cluster hosted at Inria Bordeaux. The tests were run on \textbf{Bora} compute nodes with the following specification:
-\begin{itemize}
-  \item \textbf{Nodes:} Dual-socket Intel Xeon Gold 6240 processors (36 physical cores per node, 192~GB RAM per node).
-  \item \textbf{Interconnect:} Omni-Path 100~Gb/s fabric.
-  \item \textbf{Parallel File System:} BeeGFS parallel file system backed by up to 8 active Object Storage Targets (OSTs).
-\end{itemize}
 
-\subsection{Benchmark Workload \& Evaluation Parameters}
-The test configuration used a standard 5D grid resolution matching representative Gysela runs:
-\begin{equation}
-    N_r \times N_\theta \times N_\varphi \times N_{v_\parallel} \times N_\mu = 128 \times 128 \times 64 \times 64 \times 64
-\end{equation}
-This setup yields a single-checkpoint memory footprint of approximately 34.35 GB.
-
-All benchmarks were submitted in exclusive node allocation mode with 8 tasks per node across process scales ranging from 16 MPI ranks (2 nodes) up to 128 MPI ranks (16 nodes). To account for background network and storage noise, each experimental point represents the average of 5 independent executions.
-
-Key measured metrics include:
-\begin{itemize}
-    \item \textbf{Write Time ($T_{\text{write}}$):} Effective time spent within the PDI write call in seconds.
-    \item \textbf{Aggregate Write Bandwidth ($BW_{\text{write}}$):} Defined as total dataset volume divided by write time, expressed in Gbit/s:
-    \begin{equation}
-        BW_{\text{write}} = \frac{\text{Data Volume (Bits)}}{T_{\text{write}} \text{ (s)}} \times 10^{-9}
-    \end{equation}
-\end{itemize}
-
-% ==============================================================================
-\section{Experimental Evaluation and Analysis}
-\label{sec:results}
-% ==============================================================================
+The first phase of our experiments took place on the Plafrim cluster at Inria Bordeaux. Benchmarks were deployed on the Bora compute nodes, which are equipped with dual-socket Intel Xeon Gold 6240 processors (36 physical cores per node at 2.60~GHz) and 192~GB of RAM per node. 
+Inter-node communications relied on an Intel Omni-Path network delivering 100~Gb/s bandwidth. Storage on Plafrim is managed by a BeeGFS parallel file system offering an aggregate bandwidth capped at 10~Gbit/s and configured with up to 8 active Object Storage Targets (OSTs). This platform provided a controlled environment to validate our 
+setup and measure baseline performance.
+To evaluate our strategies at a larger scale, we extended our benchmark campaign to the Adastra supercomputer at CINES. Specifically, tests were run on the GENOA CPU partition, which features dual-socket AMD EPYC 9654 processors with 192 physical cores per node and high memory throughput. Nodes are connected via an HPE Slingshot-11 high-speed network. 
+Storage on Adastra is provided by a production-grade Lustre parallel file system, which allows fine-grained data striping across up to 40 active OSTs.
 
 \newpage
 \bibliographystyle{plain}

@@ -9,5 +9,3 @@
 \contentsline {subsection}{\numberline {3.3}Software Stack and Tooling}{7}{subsection.3.3}%
 \contentsline {section}{\numberline {4}Experimental Setup}{7}{section.4}%
 \contentsline {subsection}{\numberline {4.1}Hardware and Storage Infrastructure}{7}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Benchmark Workload \& Evaluation Parameters}{7}{subsection.4.2}%
-\contentsline {section}{\numberline {5}Experimental Evaluation and Analysis}{8}{section.5}%
