@@ -5,8 +5,9 @@
 \contentsline {subsection}{\numberline {3.2}Parallel Write Strategies}{6}{subsection.3.2}%
 \contentsline {subsubsection}{\numberline {3.2.1}Single Shared File (SSF)}{6}{subsubsection.3.2.1}%
 \contentsline {subsubsection}{\numberline {3.2.2}Subfiling}{6}{subsubsection.3.2.2}%
-\contentsline {subsubsection}{\numberline {3.2.3}File Per Process (FPP)}{7}{subsubsection.3.2.3}%
+\contentsline {subsubsection}{\numberline {3.2.3}File Per Process (FPP)}{6}{subsubsection.3.2.3}%
 \contentsline {subsection}{\numberline {3.3}Software Stack and Tooling}{7}{subsection.3.3}%
 \contentsline {section}{\numberline {4}Experimental Setup}{7}{section.4}%
 \contentsline {subsection}{\numberline {4.1}Hardware and Storage Infrastructure}{7}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Benchmark Workload \& Evaluation Parameters}{7}{subsection.4.2}%
 \contentsline {section}{\numberline {5}Experimental Evaluation and Analysis}{8}{section.5}%
