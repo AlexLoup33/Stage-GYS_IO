@@ -56,4 +56,14 @@ distclean:
 	rm -f $(MAIN).bbl $(MAIN).synctex.gz $(MAIN)-final.synctex.gz *-eps-converted-to.pdf
 
 help:
-	@echo "targets: all (default), pdf, final, force, watch, view, clean, distclean"
+	@echo "Report build targets:"
+	@echo "  make            build $(MAIN).pdf, the draft with annotations shown"
+	@echo "  make final      build $(MAIN)-final.pdf, annotations and TODOs stripped"
+	@echo "  make force      rebuild the draft from scratch, ignoring what is cached"
+	@echo "  make watch      rebuild the draft on every save, until interrupted"
+	@echo "  make view       build the draft and open it in $(VIEWER)"
+	@echo "  make clean      delete intermediate files, keep the PDFs"
+	@echo "  make distclean  delete intermediate files and the PDFs"
+	@echo
+	@echo "The draft and the final version keep separate aux files, so switching"
+	@echo "between them never forces a full recompile."
