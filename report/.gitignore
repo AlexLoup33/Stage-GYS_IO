@@ -1,0 +1,4 @@
+# Clean build produced by "make final"
+squelette-rr-final.*
+# BibTeX log
+*.blg

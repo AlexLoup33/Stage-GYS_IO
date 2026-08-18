@@ -1,0 +1,76 @@
+%%
+%% review.sty -- drafting and reviewing annotations
+%%
+%% Same set of macros used in the memoire-m2 preamble, packaged separately so
+%% the report can drop them in the final version without touching the text.
+%%
+%%   \todoitem{...}       marker for something still to do or to check   (red)
+%%
+%%   \add{...}            text added by a reviewer                       (blue)
+%%   \add[teal]{...}      same, in any xcolor colour name
+%%   \del{...}            text to remove, struck through                 (red)
+%%   \replace{old}{new}   struck-through old, followed by the new text
+%%   \note{...}           side remark, not part of the text            (orange)
+%%   \begin{cut}...\end{cut}
+%%                        removes a whole passage: use it instead of \del when
+%%                        the text spans several paragraphs or contains macros
+%%                        (\sout copes with neither). Shown in colour, not
+%%                        struck through.
+%%
+%%   \todoitemsoff        hide every \todoitem marker
+%%   \annotationsplain    accept everything: added and replacement text in
+%%                        normal black, struck-through text dropped, \note
+%%                        remarks kept as plain text
+%%   \annotationsoff      same, but drop the \note remarks as well
+%%
+%% Put \annotationsoff and \todoitemsoff right after \begin{document} for a
+%% clean version, or build it with "make final", which defines \finalversion
+%% and switches both off automatically.
+%%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{review}[2026/08/18 drafting and reviewing annotations]
+
+\RequirePackage{xcolor}
+\RequirePackage{amssymb}   % \blacktriangleright, used by \note
+\RequirePackage[normalem]{ulem}
+
+\definecolor{addcolour}{HTML}{0B5FA5}
+\definecolor{delcolour}{HTML}{A11616}
+\definecolor{notecolour}{HTML}{B35C00}
+
+\newcommand{\todoitem}[1]{\textcolor{red}{\textbf{[TODO:} #1\textbf{]}}}
+\newcommand{\todoitemsoff}{\renewcommand{\todoitem}[1]{}}
+
+\newcommand{\add}[2][addcolour]{\textcolor{#1}{#2}}
+\newcommand{\del}[1]{\textcolor{delcolour}{\sout{#1}}}
+\newcommand{\replace}[2]{\del{#1}\ \add{#2}}
+\newcommand{\note}[2][notecolour]{\textcolor{#1}{\small$\blacktriangleright$\,\textit{#2}}}
+
+\newenvironment{cut}%
+    {\par\color{delcolour}\itshape[cut]\ \ignorespaces}%
+    {\par}
+
+\newcommand{\annotationsplain}{%
+    \renewcommand{\add}[2][]{##2}%
+    \renewcommand{\del}[1]{}%
+    \renewcommand{\replace}[2]{##2}%
+    \renewcommand{\note}[2][]{##2}%
+    \renewenvironment{cut}{\setbox0=\vbox\bgroup}{\egroup}%
+}
+\newcommand{\annotationsoff}{%
+    \renewcommand{\add}[2][]{##2}%
+    \renewcommand{\del}[1]{}%
+    \renewcommand{\replace}[2]{##2}%
+    \renewcommand{\note}[2][]{}%
+    \renewenvironment{cut}{\setbox0=\vbox\bgroup}{\egroup}%
+}
+
+% "make final" builds with \finalversion defined: no markers, no annotations.
+\AtBeginDocument{%
+    \ifdefined\finalversion
+        \todoitemsoff
+        \annotationsoff
+    \fi
+}
+
+\endinput

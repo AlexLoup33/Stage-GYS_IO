@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.7.6)  17 AUG 2026 15:11
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.1.7)  18 AUG 2026 10:20
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/home/alexloup/Documents/Stage-GYS_IO/report/squelette-rr.tex
-(/home/alexloup/Documents/Stage-GYS_IO/report/squelette-rr.tex
+**/home/luan/Devel/Stage-GYS_IO/report/squelette-rr.tex
+(/home/luan/Devel/Stage-GYS_IO/report/squelette-rr.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
@@ -504,7 +504,29 @@ LaTeX Info: Redefining \Relbar on input line 971.
 \mathdisplay@stack=\toks45
 LaTeX Info: Redefining \[ on input line 2953.
 LaTeX Info: Redefining \] on input line 2954.
-) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryshapes.code.tex
+) (./review.sty
+Package: review 2026/08/18 drafting and reviewing annotations
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)) (/usr/share/texlive/texmf-dist/tex/generic/ulem/ulem.sty
+\UL@box=\box66
+\UL@hyphenbox=\box67
+\UL@skip=\skip54
+\UL@hook=\toks46
+\UL@height=\dimen286
+\UL@pe=\count317
+\UL@pixel=\dimen287
+\ULC@box=\box68
+Package: ulem 2019/11/18
+\ULdepth=\dimen288
+)) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryshapes.code.tex
 File: tikzlibraryshapes.code.tex 2023-01-15 v3.1.10 (3.1.10)
  (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryshapes.geometric.code.tex
 File: tikzlibraryshapes.geometric.code.tex 2023-01-15 v3.1.10 (3.1.10)
@@ -526,58 +548,58 @@ File: pgflibraryshapes.arrows.code.tex 2023-01-15 v3.1.10 (3.1.10)
 File: tikzlibraryshapes.multipart.code.tex 2023-01-15 v3.1.10 (3.1.10)
  (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/shapes/pgflibraryshapes.multipart.code.tex
 File: pgflibraryshapes.multipart.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\pgfnodepartlowerbox=\box66
-\pgfnodeparttwobox=\box67
-\pgfnodepartthreebox=\box68
-\pgfnodepartfourbox=\box69
-\pgfnodeparttwentybox=\box70
-\pgfnodepartnineteenbox=\box71
-\pgfnodeparteighteenbox=\box72
-\pgfnodepartseventeenbox=\box73
-\pgfnodepartsixteenbox=\box74
-\pgfnodepartfifteenbox=\box75
-\pgfnodepartfourteenbox=\box76
-\pgfnodepartthirteenbox=\box77
-\pgfnodeparttwelvebox=\box78
-\pgfnodepartelevenbox=\box79
-\pgfnodeparttenbox=\box80
-\pgfnodepartninebox=\box81
-\pgfnodeparteightbox=\box82
-\pgfnodepartsevenbox=\box83
-\pgfnodepartsixbox=\box84
-\pgfnodepartfivebox=\box85
+\pgfnodepartlowerbox=\box69
+\pgfnodeparttwobox=\box70
+\pgfnodepartthreebox=\box71
+\pgfnodepartfourbox=\box72
+\pgfnodeparttwentybox=\box73
+\pgfnodepartnineteenbox=\box74
+\pgfnodeparteighteenbox=\box75
+\pgfnodepartseventeenbox=\box76
+\pgfnodepartsixteenbox=\box77
+\pgfnodepartfifteenbox=\box78
+\pgfnodepartfourteenbox=\box79
+\pgfnodepartthirteenbox=\box80
+\pgfnodeparttwelvebox=\box81
+\pgfnodepartelevenbox=\box82
+\pgfnodeparttenbox=\box83
+\pgfnodepartninebox=\box84
+\pgfnodeparteightbox=\box85
+\pgfnodepartsevenbox=\box86
+\pgfnodepartsixbox=\box87
+\pgfnodepartfivebox=\box88
 ))) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryarrows.code.tex
 File: tikzlibraryarrows.code.tex 2023-01-15 v3.1.10 (3.1.10)
  (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/pgflibraryarrows.code.tex
 File: pgflibraryarrows.code.tex 2023-01-15 v3.1.10 (3.1.10)
-\arrowsize=\dimen286
+\arrowsize=\dimen289
 )) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarypositioning.code.tex
 File: tikzlibrarypositioning.code.tex 2023-01-15 v3.1.10 (3.1.10)
 ) (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count317
-\l__pdf_internal_box=\box86
+\l__color_backend_stack_int=\count318
+\l__pdf_internal_box=\box89
 ) (./squelette-rr.aux)
 \openout1 = `squelette-rr.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -615,46 +637,40 @@ LaTeX Font Info:    ... okay on input line 56.
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count318
-\scratchdimen=\dimen287
-\scratchbox=\box87
-\nofMPsegments=\count319
-\nofMParguments=\count320
-\everyMPshowfont=\toks46
-\MPscratchCnt=\count321
-\MPscratchDim=\dimen288
-\MPnumerator=\count322
-\makeMPintoPDFobject=\count323
-\everyMPtoPDFconversion=\toks47
+\scratchcounter=\count319
+\scratchdimen=\dimen290
+\scratchbox=\box90
+\nofMPsegments=\count320
+\nofMParguments=\count321
+\everyMPshowfont=\toks47
+\MPscratchCnt=\count322
+\MPscratchDim=\dimen291
+\MPnumerator=\count323
+\makeMPintoPDFobject=\count324
+\everyMPtoPDFconversion=\toks48
 ) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
- (/usr/share/texlive/texmf-dist/tex/latex/grfext/grfext.sty
-Package: grfext 2019/12/03 v1.3 Manage graphics extensions (HO)
-)
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
-Package grfext Info: Graphics extension search list:
-(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps]
-(grfext)             \AppendGraphicsExtensions on input line 504.
  (/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-Package hyperref Info: Link coloring OFF on input line 56.
+Package hyperref Info: Link coloring OFF on input line 57.
 
 Package pgfplots notification 'compat/show suggested version=true': document has been generated with the most recent feature set (\pgfplotsset{compat=1.18}).
 
 Package epstopdf Info: Source file: <rrpage1.eps>
-(epstopdf)                    date: 2026-07-27 10:32:15
+(epstopdf)                    date: 2026-08-17 15:53:28
 (epstopdf)                    size: 229090 bytes
 (epstopdf)             Output file: <rrpage1-eps-converted-to.pdf>
-(epstopdf)                    date: 2026-07-27 10:32:15
-(epstopdf)                    size: 182583 bytes
+(epstopdf)                    date: 2026-08-18 09:30:57
+(epstopdf)                    size: 182289 bytes
 (epstopdf)             Command: <repstopdf --outfile=rrpage1-eps-converted-to.pdf rrpage1.eps>
-(epstopdf)             \includegraphics on input line 58.
+(epstopdf)             \includegraphics on input line 59.
 Package epstopdf Info: Output file is already uptodate.
 <rrpage1-eps-converted-to.pdf, id=7, 612.2875pt x 792.9625pt>
 File: rrpage1-eps-converted-to.pdf Graphic file (type pdf)
 <use rrpage1-eps-converted-to.pdf>
-Package pdftex.def Info: rrpage1-eps-converted-to.pdf  used on input line 58.
+Package pdftex.def Info: rrpage1-eps-converted-to.pdf  used on input line 59.
 (pdftex.def)             Requested size: 612.28601pt x 792.96056pt.
 
 
@@ -662,17 +678,17 @@ pdfTeX warning: pdflatex (file ./logo-inria.pdf): PDF inclusion: found PDF versi
 <logo-inria.pdf, id=8, 310.59837pt x 109.13774pt>
 File: logo-inria.pdf Graphic file (type pdf)
 <use logo-inria.pdf>
-Package pdftex.def Info: logo-inria.pdf  used on input line 58.
+Package pdftex.def Info: logo-inria.pdf  used on input line 59.
 (pdftex.def)             Requested size: 142.26378pt x 49.98747pt.
-LaTeX Font Info:    Trying to load font information for T1+phv on input line 58.
+LaTeX Font Info:    Trying to load font information for T1+phv on input line 59.
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1phv.fd
 File: t1phv.fd 2020/03/25 scalable font definitions for T1/phv.
 )
-LaTeX Font Info:    Trying to load font information for T1+ptm on input line 58.
+LaTeX Font Info:    Trying to load font information for T1+ptm on input line 59.
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1ptm.fd
 File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
 )
-LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 58.
+LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 59.
  (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 ) [0{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}
@@ -681,28 +697,35 @@ File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
 pdfTeX warning (ext4): destination with the same identifier (name{page.0}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.58 \makeRT
+l.59 \makeRT
              % Rapport Technique Inria [0]
 Package epstopdf Info: Source file: <pagei.eps>
-(epstopdf)                    date: 2026-07-27 10:32:15
+(epstopdf)                    date: 2026-08-17 15:53:28
 (epstopdf)                    size: 99069 bytes
 (epstopdf)             Output file: <pagei-eps-converted-to.pdf>
-(epstopdf)                    date: 2026-07-27 10:32:15
-(epstopdf)                    size: 80224 bytes
+(epstopdf)                    date: 2026-08-18 09:30:58
+(epstopdf)                    size: 79930 bytes
 (epstopdf)             Command: <repstopdf --outfile=pagei-eps-converted-to.pdf pagei.eps>
-(epstopdf)             \includegraphics on input line 58.
+(epstopdf)             \includegraphics on input line 59.
 Package epstopdf Info: Output file is already uptodate.
-<pagei-eps-converted-to.pdf, id=25, 612.2875pt x 792.9625pt>
+<pagei-eps-converted-to.pdf, id=24, 612.2875pt x 792.9625pt>
 File: pagei-eps-converted-to.pdf Graphic file (type pdf)
 <use pagei-eps-converted-to.pdf>
-Package pdftex.def Info: pagei-eps-converted-to.pdf  used on input line 58.
+Package pdftex.def Info: pagei-eps-converted-to.pdf  used on input line 59.
 (pdftex.def)             Requested size: 612.28601pt x 792.96056pt.
 File: logo-inria.pdf Graphic file (type pdf)
 <use logo-inria.pdf>
-Package pdftex.def Info: logo-inria.pdf  used on input line 58.
+Package pdftex.def Info: logo-inria.pdf  used on input line 59.
 (pdftex.def)             Requested size: 142.26378pt x 49.98747pt.
-
-Overfull \hbox (40.404pt too wide) in paragraph at lines 58--58
+LaTeX Font Info:    Trying to load font information for U+msa on input line 59.
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 59.
+ (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+Overfull \hbox (40.404pt too wide) in paragraph at lines 59--59
 $[]$ 
  []
 
@@ -710,40 +733,40 @@ $[]$
 \tf@toc=\write4
 \openout4 = `squelette-rr.toc'.
 
- [3]
-<figures/io_per_flop.pdf, id=87, 469.04958pt x 314.55426pt>
+ [3] (./sections/01-introduction.tex
+<figures/io_per_flop.pdf, id=88, 469.04958pt x 314.55426pt>
 File: figures/io_per_flop.pdf Graphic file (type pdf)
 <use figures/io_per_flop.pdf>
-Package pdftex.def Info: figures/io_per_flop.pdf  used on input line 75.
+Package pdftex.def Info: figures/io_per_flop.pdf  used on input line 14.
 (pdftex.def)             Requested size: 230.04079pt x 154.26732pt.
- [4 <./figures/io_per_flop.pdf>] [5] (./figures/ssf_background.tex) (./figures/subfiling_background.tex) [6] (./figures/fpp_background.tex)
-LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 161.
+ [4 <./figures/io_per_flop.pdf>]) (./sections/02-context.tex [5]
+LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 48.
  (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2023/04/13 v2.5m Standard LaTeX font definitions
-) [7] [8]
+)) (./sections/03-background.tex [6] (./figures/ssf_background.tex) (./figures/subfiling_background.tex) [7] (./figures/fpp_background.tex)) (./sections/04-experimental-setup.tex [8]) [9] (./squelette-rr.bbl) [10]
 Package epstopdf Info: Source file: <pagei.eps>
-(epstopdf)                    date: 2026-07-27 10:32:15
+(epstopdf)                    date: 2026-08-17 15:53:28
 (epstopdf)                    size: 99069 bytes
 (epstopdf)             Output file: <pagei-eps-converted-to.pdf>
-(epstopdf)                    date: 2026-07-27 10:32:15
-(epstopdf)                    size: 80224 bytes
+(epstopdf)                    date: 2026-08-18 09:30:58
+(epstopdf)                    size: 79930 bytes
 (epstopdf)             Command: <repstopdf --outfile=pagei-eps-converted-to.pdf pagei.eps>
-(epstopdf)             \includegraphics on input line 198.
+(epstopdf)             \includegraphics on input line 72.
 Package epstopdf Info: Output file is already uptodate.
 File: pagei-eps-converted-to.pdf Graphic file (type pdf)
 <use pagei-eps-converted-to.pdf>
-Package pdftex.def Info: pagei-eps-converted-to.pdf  used on input line 198.
+Package pdftex.def Info: pagei-eps-converted-to.pdf  used on input line 72.
 (pdftex.def)             Requested size: 612.28601pt x 792.96056pt.
 File: logo-inria.pdf Graphic file (type pdf)
 <use logo-inria.pdf>
-Package pdftex.def Info: logo-inria.pdf  used on input line 198.
+Package pdftex.def Info: logo-inria.pdf  used on input line 72.
 (pdftex.def)             Requested size: 142.26378pt x 49.98747pt.
 
-pdfTeX warning (ext4): destination with the same identifier (name{page.8}) has been already used, duplicate ignored
+pdfTeX warning (ext4): destination with the same identifier (name{page.10}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.198 \end{document}
-                     [8
+l.72 \end{document}
+                    [10
 
 ] (./squelette-rr.aux)
  ***********
@@ -752,13 +775,13 @@ L3 programming layer <2024-01-22>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 33739 strings out of 474222
- 801628 string characters out of 5748734
- 1941975 words of memory out of 5000000
- 55390 multiletter control sequences out of 15000+600000
- 588692 words of font info for 78 fonts, out of 8000000 for 9000
+ 34423 strings out of 474222
+ 809913 string characters out of 5748734
+ 1944975 words of memory out of 5000000
+ 56023 multiletter control sequences out of 15000+600000
+ 594947 words of font info for 100 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,8n,93p,821b,884s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,8n,93p,1234b,884s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 pdfTeX warning (dest): name{Hfootnote.4} has been referenced but does not exist, replaced by a fixed one
 
@@ -771,11 +794,11 @@ pdfTeX warning (dest): name{Hfootnote.2} has been referenced but does not exist,
 
 pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exist, replaced by a fixed one
 
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0600.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0700.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0800.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfti1000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1000.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
-Output written on squelette-rr.pdf (11 pages, 633335 bytes).
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfcc1000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0600.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0700.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0800.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfti0900.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfti1000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1000.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
+Output written on squelette-rr.pdf (13 pages, 675940 bytes).
 PDF statistics:
- 367 PDF objects out of 1000 (max. 8388607)
- 219 compressed objects within 3 object streams
- 33 named destinations out of 1000 (max. 500000)
+ 403 PDF objects out of 1000 (max. 8388607)
+ 247 compressed objects within 3 object streams
+ 38 named destinations out of 1000 (max. 500000)
  129 words of extra memory for PDF output out of 10000 (max. 10000000)
 

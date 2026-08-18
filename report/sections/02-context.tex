@@ -1,0 +1,65 @@
+% ==============================================================================
+\section{Institutional \& Project Context}
+\label{sec:context}
+% ==============================================================================
+
+This work was conducted as part of a Master's research internship at Inria (the French National Institute for Research in Digital Science and Technology) within the TADaaM research team at the Inria Centre at the University of Bordeaux. TADaaM (\textit{Topology-Aware system-scale Data management for high-performance computing}) specializes in designing system software and data management layers that bridge the gap between application-level requirements and complex hardware topologies.
+
+This research contributes directly to the NumPex program, a major French national initiative designed to build the software ecosystem for exascale supercomputing. Specifically, the study falls under the Exa-DOST work package, which focuses on developing advanced I/O optimization strategies, dynamic data management middlewares, and workflow scheduling tools for extreme-scale applications.
+
+The target application, Gysela, is maintained and advanced by researchers at CEA. Collaborative efforts between Inria TADaaM and CEA aim to prepare Gysela's I/O substrate for upcoming European exascale supercomputers (such as Alice Recoque in France).
+
+
+% GOAL (2-3 pages). Say where you were, with whom, on what, and how the work
+% was organised over time. Keep it factual; the science starts in the next
+% section.
+
+\begin{itemize}
+
+    %--------------------------------------------------------------------
+    \item \textbf{Inria and the Inria Centre at the University of Bordeaux.}
+    \begin{itemize}
+        \item Inria: French national research institute for digital science
+              and technology, organised in research centres, each hosting
+              project-teams that are  joint with the university.
+        \item The Inria Centre at the University of Bordeaux:
+              \todoitem{number of teams and staff, main research axes,
+              location on the Talence campus}.
+        \item Local ecosystem relevant to this work: HPC culture of the lab
+    \end{itemize}
+
+    %--------------------------------------------------------------------
+    \item \textbf{The host team.}
+    \begin{itemize}
+        \item Team \textsc{TADaaM}
+        \item Position of this internship inside the team's roadmap: storage
+              performance characterisation, I/O benchmarking, and the
+              development of the IOPS framework.
+        \item Supervision: Francieli, Meline...
+        \item People involved in the work. CEA people... 
+    \end{itemize}
+
+    %--------------------------------------------------------------------
+    \item \textbf{Scientific and technical environment.}
+    \begin{itemize}
+        \item \textbf{PlaFRIM}: the experimental platform used for all the
+              measurements. \todoitem{describe: number of nodes, the
+              \texttt{bora} partition used here (CPU model, cores per node,
+              memory, interconnect), SLURM as the scheduler}.
+        \item \textbf{Storage}: BeeGFS 
+        \item \textbf{Software stack}: SLURM, OpenMPI
+              \todoitem{4.0.1 was used, confirm}, Python~3.10 or later, IOPS,
+    \end{itemize}
+
+
+    %--------------------------------------------------------------------
+    \item \textbf{Organisation of the work.}
+    \begin{itemize}
+        \item Timeline of the internship: When it start, when it finish. The GYSWEEK.
+        \item Working method: weekly meetings, Git/GitLab repositories,
+              notebooks and reproducible scripts.
+        \item Deliverables produced: the study repository, the contributions to IOPS , this report, and the intended paper. The new contract.
+    \end{itemize}
+
+\end{itemize}
+
