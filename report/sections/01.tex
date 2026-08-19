@@ -1,0 +1,88 @@
+% ==============================================================================
+\section{Introduction}
+\label{sec:intro}
+% ==============================================================================
+
+In modern High-Performance Computing (HPC) systems, Input/Output (I/O) throughput has become as
+critical to overall efficiency as computational capability itself. As supercomputing architectures
+advance toward and beyond the exascale threshold, computational throughput has increased exponentially.
+However, persistent storage bandwidth has lagged behind, widening the compute-to-I/O performance gap.
+For instance, Figure~\ref{fig:io_per_flop} shows how the ratio between I/O bandwidth and compute power
+has evolved over the past two decades for the machines listed in the TOP500~\cite{top500} and
+IO500~\cite{io500list} rankings. Since 2000, the I/O bandwidth available per unit of compute has
+dropped by roughly $50\times$, from 312~GB/s per PFlop/s on ASCI Red down to 6.0~GB/s per PFlop/s
+on Frontier, with only a modest recovery on the more recent Aurora system.
+
+Therefore, while modern processors achieve multi-petaflop or exaflop performance, parallel file
+systems typically deliver only hundreds of gigabytes to a few terabytes per second in aggregate
+write bandwidth. This growing imbalance creates a severe bottleneck: high-performance computing
+tasks spend a non-negligible fraction of their allocated runtime waiting for data transfers to
+complete.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.55\textwidth]{figures/io_per_flop.pdf}
+  \caption{Compute-to-I/O performance gap in Top500 supercomputers (2000--2025). The ratio of
+  storage bandwidth per unit of compute has degraded by more than an order of magnitude.}
+  \label{fig:io_per_flop}
+\end{figure}
+
+Large-scale scientific simulations generate massive volumes of data requiring efficient parallel
+management. On shared Parallel File Systems (PFS), thousands of concurrent processes must
+coordinate access to shared storage arrays while contending for network link bandwidth and storage
+controller resources. An example of an application with strong I/O pressure is \textsc{Gysela},
+a 5D gyrokinetic simulation code developed by CEA (\textit{Commissariat à l'Énergie Atomique et
+aux Énergies Alternatives}) for nuclear fusion research. \textsc{Gysela} models plasma turbulence
+in magnetic confinement devices (tokamaks) by solving the 5D Vlasov--Poisson
+system~\cite{grandgirard2006gysela}.
+
+Because \textsc{Gysela} executes across hundreds to thousands of computing nodes over extended
+periods (days to weeks), it relies on periodic checkpointing for fault tolerance and job
+restartability. The checkpointing procedure is synchronous: all parallel processes pause numerical
+integration, aggregate their local state vectors, and flush the 5D distribution function to
+persistent storage. A single checkpoint operation can generate terabytes of data, putting strong
+pressure on the storage system and interfering with the other applications that share it. Moreover,
+during this phase, compute resources remain idle, and in shared production environments, write times
+exhibit high variability---sometimes exceeding median write durations by a factor of up to
+30~\cite{trochon2025checkpointing}---due to concurrent I/O contention from uncoordinated tenant
+jobs.
+
+Optimizing I/O performance requires a coordinated approach across two complementary layers: the
+PFS configuration, which involves adjusting low-level layout parameters such as stripe count
+(number of storage targets) and stripe size, and the high-level I/O strategy, which determines
+how application data structures are mapped, aggregated, and dispatched to storage. The three
+canonical strategies are Single Shared File, Subfiling, and File Per Process, each
+offering a different trade-off between coordination overhead, metadata pressure, and raw
+throughput. In this work, we explore both layers and conduct a systematic tuning study over the
+parameters that govern \textsc{Gysela}'s checkpoint I/O performance.
+
+To enable rapid, reproducible experimentation without incurring the massive computational cost of
+full plasma physics simulations, we employ \texttt{gys\_io}, a dedicated mini-application that
+faithfully reproduces \textsc{Gysela}'s 5D checkpoint I/O access pattern~\cite{gysela_miniapp_io}.
+
+\paragraph{Contributions.}
+The main contributions of this work are the following:
+\begin{itemize}
+  \item We evaluate the impact of PFS striping parameters---stripe count and stripe size---on
+        checkpoint write throughput at production scale.
+  \item We compare three parallel I/O strategies (Single Shared File, Subfiling, File Per Process) implemented via the PDI
+        middleware under representative 5D grid configurations and MPI process topologies, and
+        characterize the sensitivity of each strategy to its tunable parameters.
+  \item We provide practical tuning guidelines for \textsc{Gysela}'s checkpointing I/O on
+        production HPC systems, serving as a foundation toward exascale readiness on machines
+        such as Alice Recoque.
+\end{itemize}
+
+All performance results are obtained on the Adastra supercomputer at CINES, a production-grade
+system representative of the exascale environments targeted by \textsc{Gysela}. Preliminary
+experiments on the Plafrim cluster were used for setup validation and parameter-space exploration.
+
+\paragraph{Organization.}
+The remainder of this report is organized as follows.
+Section~\ref{sec:background} reviews parallel file system concepts, data striping, and the three
+write strategies under evaluation, together with the software stack used throughout our
+experiments.
+Section~\ref{sec:setup} details the experimental setup: the target platform, benchmark workload,
+and the range of parameters explored.
+Section~ presents and analyzes our performance measurements.
+Section~ summarizes the findings and outlines directions for future work.

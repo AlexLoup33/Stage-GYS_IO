@@ -3,6 +3,8 @@
 \label{sec:intro}
 % ==============================================================================
 
+% Part about the importance of the nuclear fusion in our society %
+
 In modern High-Performance Computing (HPC) systems, Input/Output (I/O) throughput has become as 
 critical to overall efficiency as computational capability itself. As supercomputing architectures 
 advance toward and beyond the exascale threshold, computational throughput has increased exponentially. 
@@ -36,8 +38,8 @@ Because Gysela executes across hundreds to thousands of computing nodes over ext
 tolerance and job restartability. The checkpointing procedure is synchronous: all parallel processes pause numerical integration, aggregate their local state 
 vectors, and flush the 5D distribution function to persistent storage. A single checkpoint operation can generate terabytes of data, putting strong pressure on
 the storage system and interfering with the other applications that share it. Moreover, during this phase, compute resources remain idle, and in shared production 
-environments, the write times exhibit high variability—sometimes exceeding median write durations by a factor of up to 30 \cite{trochon2025checkpointing}.—due to 
-concurrent I/O contention from uncoordinated tenant jobs.
+environments, specifisome configurations, the write times exhibit high variability—sometimes exceeding median write durations by a factor of up to 30\cite{trochon2025checkpointing}.
+—due to concurrent I/O contention from uncoordinated tenant jobs.
 
 Optimizing I/O performance requires a coordinated approach across two complementary layers: the PFS configuration, which involves adjusting low-level layout
 parameters, such as striping count (number of storage targets) and stripe size, and high-level I/O strategies, which determine how application data structures 
@@ -48,7 +50,6 @@ which configuration maximizes I/O performance, and to characterize how each para
 To enable rapid, reproducible experimentation without incurring the massive computational cost of full plasma physics simulations, we employ gys\_io, a dedicated 
 mini-application that faithfully reproduces Gysela's 5D checkpoint I/O access pattern\cite{gysela_miniapp_io}.
 
-% --- INSTITUTIONAL & PROJECT CONTEXT (integrated) ---
 This work was carried out within the \textsc{TADaaM} research team (\textit{Topology-Aware system-scale Data management for high-performance computing}) at 
 the Inria Centre at the University of Bordeaux. TADaaM designs system software and data-management layers that bridge the gap between application-level 
 requirements and complex hardware topologies in HPC environments. The study is framed within the \textbf{NumPex} program, the French national initiative building 
@@ -60,5 +61,4 @@ Alice Recoque in France.
 The remainder of this report is organized as follows. Section~\ref{sec:context} presents the institutional and project context of this work. 
 Section~\ref{sec:background} reviews how parallel file systems distribute data across storage targets and describes the three parallel write strategies 
 we evaluate, together with the software stack used to run the experiments. Section~\ref{sec:setup} details the experimental setup: the clusters and their 
-storage systems, the benchmark workload, and the range of parameters explored. \todoitem{extend this roadmap once the results and conclusion sections exist}
-
+storage systems, the benchmark workload, the software and stacks used and the range of parameters explored. \todoitem{extend this roadmap once the results and conclusion sections exist}
