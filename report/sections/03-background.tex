@@ -6,31 +6,47 @@
 \subsection{Parallel File Systems and Data Striping}
 \label{sec:pfs}
 
-Traditional file systems rely on single storage controllers, which creates a severe bottleneck when thousands of parallel MPI ranks attempt simultaneous file access. Parallel File Systems (PFS)—such as Lustre, BeeGFS, and many others—bypass this bottleneck by partitioning files across multiple independent storage devices via data striping.
+Traditional file systems rely on single storage controllers, which creates a severe bottleneck 
+when thousands of parallel MPI ranks attempt simultaneous file access. PFS—such as Lustre, BeeGFS, 
+and many others—bypass this bottleneck by partitioning files across multiple independent storage devices via data striping.
 
-In such systems, storage capacity is divided into logical entities called Object Storage Targets (OSTs). An OST represents a dedicated physical storage unit (e.g., a RAID array or NVMe volume) managed by an Object Storage Server (OSS). Metadata servers (MDS) maintain directory structures and file layouts, while OSTs handle actual data payload transfers.
+In such systems, storage capacity is divided into logical entities called Object Storage Targets 
+(OSTs). An OST represents a dedicated physical storage unit (e.g., a RAID array or NVMe volume) managed 
+by an Object Storage Server (OSS). Metadata servers (MDS) maintain directory structures and file layouts, 
+while OSTs handle actual data payload transfers.
 
-Data striping partitions a logical file stream into contiguous blocks of size $S_{\text{stripe}}$ (Stripe Size). These blocks are distributed in a round-robin sequence across $N_{\text{OST}}$ targets (Stripe Count or OST Count). For example, with $N_{\text{OST}} = 4$ and $S_{\text{stripe}} = 1$~MB, the first megabyte is written to OST~0, the second to OST~1, and so on. Striping allows applications to aggregate the physical bandwidth of multiple storage devices, ideally achieving an $N_{\text{OST}}$-fold increase in overall write throughput.
+Data striping partitions a logical file stream into contiguous blocks of size $S_{\text{stripe}}$ (Stripe Size). 
+These blocks are distributed in a round-robin sequence across $N_{\text{OST}}$ targets (Stripe Count or OST Count). 
+For example, with $N_{\text{OST}} = 4$ and $S_{\text{stripe}} = 1$~MB, the first megabyte is written to OST~0, the second 
+to OST~1, and so on. Striping allows applications to aggregate the physical bandwidth of multiple storage devices, ideally 
+achieving an $N_{\text{OST}}$-fold increase in overall write throughput.
 
 \subsection{Parallel Write Strategies}
 \label{sec:strategies}
 
-The layout of output files significantly impacts storage efficiency. In this study, we analyze three primary high-level I/O strategies, implemented via the Parallel Data Interface (PDI) middleware:
+The layout of output files significantly impacts storage efficiency. In this study, we analyze three primary high-level I/O strategies, 
+implemented via the Parallel Data Interface (PDI) middleware:
 
-\subsubsection{Single Shared File (SSF)}
-In the Single Shared File approach, all MPI processes concurrently write their local data slices into a single unified file on the PFS (Figure~\ref{fig:ssf_schema}). Standard libraries (such as HDF5 or MPI-IO) employ two-phase I/O to aggregate non-contiguous memory layouts into large, contiguous file offsets before issuing collective storage calls. While SSF simplifies dataset management by producing a single output file, it can suffer from locking contention on storage targets when rank counts scale up.
+\subsubsection{Single Shared File}
+In the Single Shared File approach, all MPI processes concurrently write their local data slices into a single unified file on the PFS 
+(Figure~\ref{fig:ssf_schema}). Standard libraries (such as HDF5 or MPI-IO) employ two-phase I/O to aggregate non-contiguous memory layouts 
+into large, contiguous file offsets before issuing collective storage calls. While SSF simplifies dataset management by producing a single 
+output file, it can suffer from locking contention on storage targets when rank counts scale up.
 
 \begin{figure}[h]
   \centering
   \input{figures/ssf_background.tex}
-  \caption{Single Shared File (SSF) strategy overview.}
+  \caption{Single Shared File strategy overview.}
   \label{fig:ssf_schema}
 \end{figure}
 
 \subsubsection{Subfiling}
-Subfiling acts as an intermediate approach between SSF and individual file writes. MPI processes are partitioned into distinct sub-groups. Within each group, an assigned process—referred to as an I/O Concentrator (IOC) or aggregator—collects data from its peer ranks and writes it to a dedicated subfile (Figure~\ref{fig:subfiling_schema}). 
+Subfiling acts as an intermediate approach between SSF and individual file writes. MPI processes are partitioned into distinct sub-groups. 
+Within each group, an assigned process—referred to as an I/O Concentrator (IOC) or aggregator—collects data from its peer ranks and writes 
+it to a dedicated subfile (Figure~\ref{fig:subfiling_schema}). 
 
-This reduces file system lock contention compared to SSF, while avoiding the metadata overload associated with generating thousands of individual files. The total number of generated subfiles ($N_{\text{subfiles}}$) is a tunable parameter.
+This reduces file system lock contention compared to SSF, while avoiding the metadata overload associated with generating thousands of individual 
+files. The total number of generated subfiles ($N_{\text{subfiles}}$) is a tunable parameter.
 
 \begin{figure}[h]
   \centering
@@ -39,14 +55,16 @@ This reduces file system lock contention compared to SSF, while avoiding the met
   \label{fig:subfiling_schema}
 \end{figure}
 
-\subsubsection{File Per Process (FPP)}
+\subsubsection{File Per Process }
 \label{fig:fpp_schema}
-In the File Per Process approach, every MPI process creates and writes its own separate file independently (Figure~\ref{fig:fpp_schema}). Because there is no inter-process communication or offset synchronization required, local write throughput can be very high. However, FPP generates $N_{\text{ranks}}$ separate files per checkpoint, which can strain metadata servers (MDS) at scale and complicate downstream post-processing or data management.
+In the File Per Process approach, every MPI process creates and writes its own separate file independently (Figure~\ref{fig:fpp_schema}). Because there is 
+no inter-process communication or offset synchronization required, local write throughput can be very high. However, FPP generates $N_{\text{ranks}}$ separate 
+files per checkpoint, which can strain metadata servers (MDS) at scale and complicate downstream post-processing or data management.
 
 \begin{figure}[h]
   \centering
   \input{figures/fpp_background.tex}
-  \caption{File Per Process (FPP) strategy overview.}
+  \caption{File Per Process  strategy overview.}
 \end{figure}
 
 \subsection{Software Stack and Tooling}
