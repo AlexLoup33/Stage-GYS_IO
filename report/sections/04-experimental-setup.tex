@@ -3,19 +3,41 @@
 \label{sec:setup}
 % ==============================================================================
 
-To evaluate the performance and scalability of our parallel I/O strategies, we conducted experiments across two different High-Performance Computing (HPC) clusters: a regional cluster used for initial setup and prototyping, and a national supercomputer used for larger-scale runs.
+To evaluate the performance and scalability of our parallel I/O strategies, we conducted experiments 
+across two distinct High-Performance Computing (HPC) clusters: a regional cluster used for initial setup 
+and prototyping, and a national supercomputer used for larger-scale runs.
 
-\subsection{Hardware and Storage Infrastructure}
+\subsection{Target Platforms and Storage Infrastructure}
 
-The first phase of our experiments took place on the Plafrim cluster at Inria Bordeaux. Benchmarks were deployed on the Bora compute nodes, which are equipped with dual-socket Intel Xeon Gold 6240 processors (36 physical cores per node at 2.60~GHz) and 192~GB of RAM per node. 
-Inter-node communications relied on an Intel Omni-Path network delivering 100~Gb/s bandwidth. Storage on Plafrim is managed by a BeeGFS parallel file system offering an aggregate bandwidth capped at 10~Gbit/s and configured with up to 8 active Object Storage Targets (OSTs). This platform provided a controlled environment to validate our 
-setup and measure baseline performance.
-To evaluate our strategies at a larger scale, we extended our benchmark campaign to the Adastra supercomputer at CINES. Specifically, tests were run on the GENOA CPU partition, which features dual-socket AMD EPYC 9654 processors with 192 physical cores per node and high memory throughput. Nodes are connected via an HPE Slingshot-11 high-speed network. 
-Storage on Adastra is provided by a production-grade Lustre parallel file system, which allows fine-grained data striping across up to 40 active OSTs.
+\subsubsection{Prototyping Environment: Plafrim}
+The first phase of our experiments took place on the Plafrim~\cite{plafrim_inria} cluster at Inria Bordeaux. Benchmarks were 
+deployed on the \textit{Bora} compute nodes, which are equipped with dual-socket Intel Xeon Gold 6240 processors 
+(36 physical cores per node at 2.60~GHz) and 192~GB of RAM per node. Inter-node communications relied 
+on an Intel Omni-Path network delivering 100~Gb/s bandwidth. Storage on Plafrim is managed by a BeeGFS~\cite{chowdhury2019characterization}
+parallel file system offering an aggregate bandwidth capped at 10~Gbit/s and configured with up to 8 active Object 
+Storage Targets (OSTs). 
 
-\subsection{Benchmark Workload \& Evaluation Parameters}
+\subsubsection{Production Environment: Adastra}
+To evaluate our strategies at a larger scale, we extended our benchmark campaign to the Adastra~\cite{adastra_cines} supercomputer at CINES. 
+Specifically, tests were run on the GENOA CPU partition, which features dual-socket AMD EPYC 9654 processors (192 physical 
+cores per node and high memory throughput). Nodes are connected via an HPE Slingshot-11 high-speed network. Storage on Adastra 
+is provided by a production-grade Lustre parallel file system, which allows fine-grained data striping across up to 40 active OSTs.
 
-The experiments considered several 5D grid configurations representative of different Gysela workloads. The evaluated resolutions and their corresponding single-checkpoint memory footprints are summarized below:
+\subsection{Software Stack and Reproducibility}
+
+Ensuring reproducible I/O measurements requires strict control over the software environment. On both platforms, the benchmark applications 
+and I/O middleware were compiled using \textbf{[TODO: version of GCC]} and \textbf{[TODO: version of OpenMPI \& Cray-MPICH 8.1]}. The I/O 
+stack relies on PDI version \textbf{1.11} and HDF5 version \textbf{[TODO: version of HDF5]}, with parallel 
+I/O (MPI-IO) and \texttt{H5FD\_SUBFILING} explicitly enabled. 
+
+To mitigate NUMA effects and ensure consistent execution, MPI processes were pinned to physical cores using \texttt{--bind-to core=1}. For the 
+Subfiling strategy, the I/O Concentrators were allocated and distributed with a strict mapping of one aggregator per compute node, thereby distributing 
+the aggregation workload evenly across the allocated infrastructure and avoiding intra-node bottlenecks.
+
+\subsection{Application Workloads and Grid Configurations}
+
+The experiments considered several 5D grid configurations representative of different Gysela workloads. 
+The evaluated resolutions and their corresponding single-checkpoint memory footprints are summarized below:
 
 \begin{align*}
     C_1 &: N_r \times N_\theta \times N_\varphi \times N_{v_\parallel} \times N_\mu
@@ -26,7 +48,26 @@ The experiments considered several 5D grid configurations representative of diff
         = 512 \times 1024 \times 64 \times 128 \times 64
 \end{align*}
 
-These configurations result in single-checkpoint memory footprints ranging from approximately 64 GB to \dots GB. Each configuration was evaluated using the different process topologies considered in the experiments, allowing their impact on I/O performance to be assessed independently of the problem size.
+%These configurations result in single-checkpoint memory footprints ranging from approximately 64~GB to 
+%\textbf{[TODO: insérer taille de C3]}~GB. In the gys\_io proxy application, the 5D domain is mapped to a 
+%Cartesian MPI topology. Specifically, the parallelization is applied across the \textbf{[TODO: ex: $r, \theta,$ and $\varphi$]} 
+%dimensions, while the \textbf{[TODO: ex: $v_\parallel$ and $\mu$]} dimensions remain local to each MPI rank. This access pattern 
+%dictates the granularity of the I/O requests issued by each process.
 
-Benchmarks were submitted in exclusive node allocation mode with 8 tasks per node, across process scales ranging from 16 MPI ranks (2 nodes) up to  MPI ranks 2048 (256 nodes). To account for background network and storage noise, each experimental point represents the average of 5 independent executions.
+\subsection{Evaluation Methodology and Metrics}
 
+To systematically explore the performance landscape, we varied both file system layouts and high-level software strategies:
+\begin{itemize}
+    \item \textbf{PFS Striping on Plafrim (BeeGFS):} Stripe counts ($N_{OST}$) were evaluated exhaustively from 1 up to the maximum 8 available targets, with stripe sizes ($S_{stripe}$) set up at 512KB.
+    \item \textbf{PFS Striping on Adastra (Lustre):} To capture scalability trends and inflection points, stripe counts were scaled up to 40 OSTs following a non-linear progression. The specific subset of evaluated OST counts, along with stripe sizes ranging from 1~MB to 8~MB, are detailed alongside their respective performance analyses in Section~\ref{sec:results}[TODO: Ajouter référence vers figure OST adastra].
+    \item \textbf{I/O Strategies:} Single Shared File (SSF), File Per Process (FPP), and Subfiling. For Subfiling, the number of subfile ($N_{subfiles}$) was tuned between [TODO: Minimum] and [TODO: maximum].
+\end{itemize}
+
+All benchmarks were submitted in exclusive node allocation mode via Slurm. To maintain a constant density and mitigate intra-node 
+contention, we allocated 8 MPI tasks per node across process scales ranging from 16 MPI ranks (2 nodes) up to 2048 MPI ranks (256 nodes). 
+
+To account for background network and storage noise inherent to shared production file systems, each experimental configuration was executed 5 independent times. 
+Performance evaluation is based on the \texttt{bandwidth} metric extracted by the IOPS framework, which isolates the synchronous data flushing phase. 
+Overall I/O bandwidth is calculated by dividing the total checkpoint size by the maximum \texttt{time\_write} observed among all participating 
+MPI ranks, ensuring the metric reflects the true bottleneck of the synchronous checkpointing phase. Throughout Section \textbf{[TODO: ref sec:results]}, 
+we report the average bandwidth across the 5 runs to highlight sustained performance trends.
