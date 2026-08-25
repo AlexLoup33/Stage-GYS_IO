@@ -38,18 +38,65 @@ Luan Teylo\thanks{Permanent Researcher in TADaaM team, Inria Bordeaux}%
 
 \titlehead{Improving I/O Performances of HPC Application Gysela}
 
-\RRresume{%
-Ce rapport technique présente une étude approfondie visant à optimiser les performances d'I/O lors des phases de sauvegarde (checkpointing) du code de simulation gyrocinétique 5D Gysela, développé par le CEA. En utilisant le mini-app gys\_io, nous évaluons et comparons trois stratégies d'écriture parallèle (\textit{Single Shared File}, \textit{Subfiling} et \textit{File Per Process}) associées aux paramètres de configuration du système de fichiers parallèle (PFS) BeeGFS sur la plateforme Plafrim. Nos résultats mettent en évidence l'impact critique du nombre d'OST sur la bande passante, déterminent le nombre optimal de subfiles et démontrent la grande efficacité de la stratégie \textit{File Per Process} aux échelles étudiées.
-}
 
 \RRabstract{%
-In modern High-Performance Computing (HPC) systems, Input/Output (I/O) performance represents a critical bottleneck for large-scale scientific simulations. As computational power scales towards exascale, storage bandwidth has not kept pace, creating a significant compute-to-I/O performance gap. Saving application states through periodic checkpointing is essential for fault tolerance, yet synchronous checkpoint writing halts computation and wastes expensive CPU/GPU hours.
-
-This work focuses on optimizing the checkpointing performance of Gysela, a 5D gyrokinetic simulation code developed by the CEA for nuclear fusion research. Gysela generates massive datasets and relies on periodic checkpointing for execution restartability. Using gys\_io, a lightweight mini-application replicating Gysela's parallel 5D I/O patterns, we systematically evaluate three parallel I/O strategies—Single Shared File (SSF), Subfiling, and File Per Process (FPP)—alongside Parallel File System (PFS) striping configurations on clusters.
-%Our experimental evaluation highlights a $\sim 5\times$ performance improvement when scaling Object Storage Targets (OSTs) from 1 to 8, identifies the optimal subfile configuration matching the physical OST count, and demonstrates that File Per Process achieves superior write bandwidth across evaluated node scales. Finally, we outline practical optimization guidelines and lay out future perspectives on tier-0 supercomputers.
+In modern High-Performance Computing~(HPC) systems, Input/Output~(I/O) throughput
+has become a critical bottleneck for large-scale scientific simulations. As
+computational power scales toward the exascale threshold, storage bandwidth has
+failed to keep pace, creating a widening compute-to-I/O performance gap.
+ 
+\textsc{Gysela} is a 5D gyrokinetic simulation code developed by CEA for nuclear
+fusion research. It executes across hundreds to thousands of nodes over periods of
+days to weeks, and relies on periodic synchronous checkpointing for fault tolerance
+and job restartability. A single checkpoint operation can generate terabytes of
+data, halting computation and putting severe pressure on shared storage
+infrastructure.
+ 
+In this work, we conduct a systematic performance analysis of \textsc{Gysela}'s
+checkpointing I/O on the Adastra production supercomputer. Using \texttt{gys\_io},
+a lightweight mini-application that faithfully reproduces \textsc{Gysela}'s
+parallel 5D I/O access patterns, we evaluate the joint impact of Parallel File
+System~(PFS) striping configurations---stripe count and stripe size---and three
+high-level write strategies: Single Shared File~(SSF), Subfiling, and File Per
+Process~(FPP). %Our results show that [TODO: fill in once results are finalized ---
+% e.g. "$\sim5\times$ improvement scaling OSTs from 1 to 8, optimal subfile count
+% matching physical OST count, FPP achieving superior bandwidth across evaluated
+% scales"]. These findings provide practical tuning guidelines for
+% \textsc{Gysela} and lay the groundwork for exascale readiness on upcoming
+% European supercomputers such as Alice Recoque.
 }
-
 \RRkeyword{HPC, Parallel I/O, Performance Tuning, Parallel File Systems}
+
+\RRresume{%
+Dans les systèmes de calcul haute performance~(HPC) modernes, les performances
+d'entrée/sortie~(E/S) constituent un goulot d'étranglement critique pour les
+simulations scientifiques à grande échelle. Alors que la puissance de calcul
+progresse vers le seuil de l'exascale, la bande passante des systèmes de stockage
+n'a pas suivi le même rythme, creusant un écart croissant entre capacités de calcul
+et capacités d'E/S.
+ 
+\textsc{Gysela} est un code de simulation gyrocinétique 5D développé par le CEA
+pour la recherche sur la fusion nucléaire. Il s'exécute sur des centaines à des
+milliers de nœuds pendant des périodes allant de quelques jours à plusieurs
+semaines, et s'appuie sur des points de reprise (\textit{checkpoints}) synchrones
+périodiques pour la tolérance aux pannes et le redémarrage des travaux. Une seule
+opération de checkpoint peut générer plusieurs téraoctets de données, interrompant
+le calcul et sollicitant fortement l'infrastructure de stockage partagée.
+ 
+Dans ce travail, nous conduisons une analyse systématique des performances d'E/S
+de checkpointing de \textsc{Gysela} sur le supercalculateur de production Adastra.
+En utilisant \texttt{gys\_io}, une mini-application légère reproduisant fidèlement
+les schémas d'accès E/S parallèles 5D de \textsc{Gysela}, nous évaluons l'impact
+combiné des paramètres de répartition des données (\textit{striping}) du système
+de fichiers parallèle~(PFS)---nombre et taille des bandes---ainsi que de trois
+stratégies d'écriture de haut niveau~: fichier partagé unique~(SSF),
+sous-fichiers~(Subfiling) et fichier par processus~(FPP). %Nos résultats montrent
+% que [TODO: à compléter une fois les résultats finalisés]. Ces conclusions
+% fournissent des recommandations pratiques de configuration pour \textsc{Gysela}
+% et posent les bases de sa préparation à l'exascale sur les futurs
+% supercalculateurs européens tels qu'Alice Recoque.
+}
+\RRmotcle{HPC, Entrée/Sortie Parallèle, Optimisation de performances, Système de Fichiers Parallèles}
 
 \RRprojets{TADaaM}
 \RCBordeaux
@@ -61,7 +108,7 @@ This work focuses on optimizing the checkpointing performance of Gysela, a 5D gy
 \newpage
 
 \input{sections/01}
-\input{sections/02-context}
+%\input{sections/02-context}
 \input{sections/03-background}
 \input{sections/04-experimental-setup}
 
