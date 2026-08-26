@@ -1,5 +1,5 @@
 % ==============================================================================
-\section{Background \del{\& High-Level Write Strategies}}
+\section{Background}
 \label{sec:background}
 % ==============================================================================
 
@@ -8,9 +8,8 @@
 
 Traditional file systems rely on single storage controllers, which creates a severe
 bottleneck when thousands of parallel MPI ranks attempt simultaneous file access.
-\replace{Parallel File Systems~(PFS)}{PFS}---such as Lustre, BeeGFS, and GPFS---bypass this
-bottleneck by partitioning files across multiple independent storage devices via
-data striping.
+PFS---such as Lustre, BeeGFS, and GPFS---bypass this bottleneck by partitioning 
+files across multiple independent storage devices via data striping.
 
 In such systems, storage capacity is divided into logical entities called Object
 Storage Targets~(OSTs). An OST represents a dedicated physical storage unit
@@ -27,8 +26,8 @@ the physical bandwidth of multiple storage devices, ideally achieving an
 $N_{\text{OST}}$-fold increase in overall write throughput. However, the actual
 gain depends heavily on the alignment between the stripe configuration and the
 application's access pattern, which motivates the tuning study presented in
-Section~\ref{sec:results}. \add{Figure~\ref{fig:striping} illustrates this process
-for a stripe count of three.} \note{Alexandre: I added this figure as an example,
+Section~\ref{sec:results}. Figure~\ref{fig:striping} illustrates this process
+for a stripe count of three. \note{Alexandre: I added this figure as an example,
 feel free to adapt or replace it. Ideally it would show the case described just
 above, with $N_{\text{OST}} = 4$ and $S_{\text{stripe}} = 1$~MB.}
 
@@ -42,7 +41,7 @@ above, with $N_{\text{OST}} = 4$ and $S_{\text{stripe}} = 1$~MB.}
   \label{fig:striping}
 \end{figure}
 
-\add{The stripe count and the stripe size are configuration parameters rather than
+The stripe count and the stripe size are configuration parameters rather than
 fixed properties of the file system, although how much of that control reaches the
 end user depends on the deployment: Lustre lets any user set the layout of the files
 and directories they own (through \texttt{lfs setstripe}), whereas on other systems
@@ -51,31 +50,30 @@ Where users are allowed to set it, the layout is inherited from the parent direc
 a file is created with the stripe count and stripe size of the directory that holds
 it, and that layout is then fixed for the lifetime of the file. Evaluating several
 striping configurations therefore amounts to creating one directory per configuration
-and writing into each of them, which is the approach followed throughout this report.}
+and writing into each of them, which is the approach followed throughout this report.
 
 \subsection{Parallel Write Strategies}
 \label{sec:strategies}
 
-The layout of output files significantly impacts \replace{storage efficiency}{I/O
-performance}. \add{What a write strategy defines is the mapping between the data held
-in memory by the MPI ranks and the files that end up on the PFS: how many files a
-checkpoint is made of, which ranks contribute to each of them, and whether those ranks
-write collectively or independently. That mapping drives the two costs that dominate
-checkpoint time. Concentrating the output in a few files keeps the metadata load low,
+The layout of output files significantly impacts I/O performance. What a write strategy 
+defines is the mapping between the data held in memory by the MPI ranks and the files that 
+end up on the PFS: how many files a checkpoint is made of, which ranks contribute to each of them, 
+and whether those ranks write collectively or independently. That mapping drives the two costs that 
+dominate checkpoint time. Concentrating the output in a few files keeps the metadata load low,
 but forces ranks to share the same file, where concurrent writes to the same regions
 serialise on file system locks; spreading it over many files removes that contention,
 but multiplies the metadata operations and the number of objects the file system has
 to track. The mapping also interacts with the striping parameters of
 Section~\ref{sec:pfs}: a single shared file only exploits several OSTs if its stripe
 count allows it, whereas with one file per rank the files are spread
-over the targets by themselves, on top of whatever striping is applied to each of them.} In this work,
+over the targets by themselves, on top of whatever striping is applied to each of them. In this work,
 we analyze three high-level I/O strategies, all implemented via the Parallel Data
-Interface~(PDI) middleware (described in Section~\ref{sec:tools})\add{, a layer that
+Interface~(PDI) middleware (described in Section~\ref{sec:tools}), a layer that
 decouples the application from the storage backend: the strategy and its parameters
 are selected in an external configuration file rather than in the source code. All
 three strategies therefore exercise the same \texttt{gys\_io} code path and differ
 only in the file layout they produce, which is what makes the comparison in
-Section~\ref{sec:results} a comparison of layouts rather than of implementations}.
+Section~\ref{sec:results} a comparison of layouts rather than of implementations.
 
 \paragraph{Single Shared File}
 \label{sec:ssf}
@@ -88,10 +86,10 @@ two-phase I/O to aggregate non-contiguous memory layouts into large, contiguous
 file offsets before issuing collective storage calls. While SSF simplifies dataset
 management by producing a single output file, it can suffer from locking contention
 on storage targets when the number of concurrent writers scales up.
-\add{SSF is also the strategy for which the striping parameters
+SSF is also the strategy for which the striping parameters
 matter most: because the whole checkpoint lives in one file, the number of OSTs that
 serve it is exactly its stripe count, so a low stripe count caps the
-achievable bandwidth no matter how many ranks write in parallel.}
+achievable bandwidth no matter how many ranks write in parallel.
 
 \begin{figure}[h]
   \centering
@@ -111,17 +109,16 @@ However, FPP generates $N_{\text{ranks}}$ separate files per checkpoint, which c
 strain metadata servers at scale and complicate downstream post-processing and data
 management. Whether the throughput advantage of FPP outweighs these drawbacks at
 production scale is one of the questions addressed in Section~\ref{sec:results}.
-\add{The parallelism of FPP comes from two sources that combine: the files are spread
+The parallelism of FPP comes from two sources that combine: the files are spread
 over the available targets, and each file can itself be striped over several OSTs. Which
 of the two dominates depends on how the number of files compares with the number of
 targets. When the ranks far outnumber the OSTs, every target already receives many
 files, so raising the stripe count of an individual file mostly redistributes the same
 load while increasing the number of writers competing for each target; when the files
 are fewer or large enough to span many stripes, striping each of them still contributes.
-The metadata cost is not only the extra
-entries the file system has to keep for each of these files: because all ranks create
-their files at the same instant, every checkpoint also reaches the metadata servers as
-a burst of simultaneous file creations.}
+The metadata cost is not only the extra entries the file system has to keep for each of 
+these files: because all ranks create their files at the same instant, every checkpoint 
+also reaches the metadata servers as a burst of simultaneous file creations.
 
 \begin{figure}[htbp]
   \centering
@@ -143,7 +140,7 @@ a burst of simultaneous file creations.}
 \note{Alexandre: I moved Subfiling after File Per Process, so the section goes
 from one shared file, to one file per process, and then to subfiling as the
 intermediate case between them.}
-Subfiling acts as an intermediate approach between SSF and \replace{individual file writes}{File Per Process}.
+Subfiling acts as an intermediate approach between SSF and File Per Process.
 MPI processes are partitioned into distinct sub-groups. Within each group, an
 assigned process---referred to as an I/O Concentrator~(IOC) or aggregator---collects
 data from its peer ranks and writes it to a dedicated subfile
@@ -152,14 +149,14 @@ compared to SSF while avoiding the metadata overload associated with generating 
 file per process. The total number of subfiles ($N_{\text{subfiles}}$) is a tunable
 parameter; its interaction with the physical OST count is one of the central
 questions examined in this study.
-\add{This parameter interpolates between the two previous strategies: with a single
+This parameter interpolates between the two previous strategies: with a single
 subfile the scheme degenerates into SSF, and with as many subfiles as ranks it becomes
 FPP, so the useful configurations lie in between, typically one subfile per node or one
 per OST. The aggregation step is what buys the reduction in contention, as each IOC
 gathers the slices of its group and issues fewer, larger and contiguous writes instead
 of many small interleaved ones. That gain is not free: the collection phase adds a
 communication step before any data reaches the storage system, and the bandwidth of a
-group is limited by the single IOC that serves it.}
+group is limited by the single IOC that serves it.
 
 \begin{figure}[htbp]
   \centering
@@ -173,7 +170,7 @@ group is limited by the single IOC that serves it.}
 
 Our experimental framework relies on four key software components, which together
 enable systematic and reproducible evaluation of the I/O strategies described above.
-\add{\texttt{gys\_io} is the application actually executed in the experiments: a
+\texttt{gys\_io} is the application actually executed in the experiments: a
 mini-application that reproduces \textsc{Gysela}'s 5D checkpoint writes without its
 physics, so that a full parameter sweep costs a fraction of a production simulation.
 HDF5 is the format these checkpoints are written in, and the library that performs the
@@ -182,7 +179,7 @@ configuration file, which strategy and which backend a given run uses, which is 
 makes it possible to compare the three strategies without modifying the application.
 IOPS drives the campaigns themselves, generating the parameter sweeps, submitting the
 jobs to the batch scheduler and collecting the resulting measurements. Each of these
-components is described in more detail below.}
+components is described in more detail below.
 
 \paragraph{\texttt{gys\_io} Mini-Application}
 \label{sec:gysio}

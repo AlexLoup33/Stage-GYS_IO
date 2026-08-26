@@ -13,8 +13,7 @@ IO500~\cite{io500list} rankings. Since 2000, the I/O bandwidth available per uni
 dropped by roughly $50\times$, from 312~GB/s per PFlop/s on ASCI Red down to 6.0~GB/s per PFlop/s
 on Frontier, with only a modest recovery on the more recent Aurora system.
 
-Therefore, while modern processors achieve multi-petaflop or exaflop performance, parallel file
-systems typically deliver only hundreds of gigabytes to a few terabytes per second in aggregate
+Therefore, while modern processors achieve multi-petaflop or exaflop performance, Parallel File Systems (PFS) typically deliver only hundreds of gigabytes to a few terabytes per second in aggregate
 write bandwidth. This growing imbalance creates a severe bottleneck: high-performance computing
 tasks spend a non-negligible fraction of their allocated runtime waiting for data transfers to
 complete.
@@ -28,7 +27,7 @@ complete.
 \end{figure}
 
 Large-scale scientific simulations generate massive volumes of data requiring efficient parallel
-management. On shared Parallel File Systems (PFS), thousands of concurrent processes must
+management. On shared PFS, thousands of concurrent processes must
 coordinate access to shared storage arrays while contending for network link bandwidth and storage
 controller resources. An example of an application with strong I/O pressure is \textsc{Gysela},
 a 5D gyrokinetic simulation code developed by CEA (\textit{Commissariat à l'Énergie Atomique et
@@ -59,6 +58,16 @@ parameters that govern \textsc{Gysela}'s checkpoint I/O performance.
 To enable rapid, reproducible experimentation without incurring the massive computational cost of
 full plasma physics simulations, we employ \texttt{gys\_io}, a dedicated mini-application that
 faithfully reproduces \textsc{Gysela}'s 5D checkpoint I/O access pattern~\cite{gysela_miniapp_io}.
+
+This work was carried out within the \textsc{TADaaM} research team (\textit{Topology-Aware system-scale Data 
+management for high-performance computing}) at the Inria Centre at the University of Bordeaux, which
+specializes in designing system software and data-management layers that bridge the gap between application-level 
+requirements and complex hardware topologies in HPC environments. The study is framed within the NumPex program, 
+the French national initiative building the software ecosystem for exascale supercomputing, and more specifically within 
+the Exa-DOST work package, which targets advanced I/O optimization strategies and dynamic data-management middlewares 
+for extreme-scale applications. Collaborative ties between Inria TADaaM and CEA (\textit{Commissariat à l'Énergie Atomique et aux 
+Énergies Alternatives}) motivate the choice of \textsc{Gysela} as the target application: joint efforts between the two institutions 
+aim to prepare \textsc{Gysela}'s I/O substrate for upcoming European exascale machines, including Alice Recoque in France.
 
 \paragraph{Contributions.} The main contributions of this work are the following:
 \begin{itemize}

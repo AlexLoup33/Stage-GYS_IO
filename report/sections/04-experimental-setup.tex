@@ -26,8 +26,8 @@ is provided by a production-grade Lustre parallel file system, which allows fine
 \subsection{Software Stack and Reproducibility}
 
 Ensuring reproducible I/O measurements requires strict control over the software environment. On both platforms, the benchmark applications 
-and I/O middleware were compiled using \textbf{[TODO: version of GCC]} and \textbf{[TODO: version of OpenMPI \& Cray-MPICH 8.1]}. The I/O 
-stack relies on PDI version \textbf{1.11} and HDF5 version \textbf{[TODO: version of HDF5]}, with parallel 
+and I/O middleware were compiled using \textbf{GCC 13.2.1} \& \textbf{OpenMPI [TODO: version of OpenMPI]}. The I/O 
+stack relies on PDI version \textbf{1.11.0} and HDF5 version \textbf{[TODO: version of HDF5]}, with parallel 
 I/O (MPI-IO) and \texttt{H5FD\_SUBFILING} explicitly enabled. 
 \note{Alexandre: add the version you used for all the tools. For PDI, you can
 refer to the commit you used in your tests. Remember the idea is to make the results
