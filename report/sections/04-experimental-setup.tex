@@ -72,5 +72,5 @@ contention, we allocated 8 MPI tasks per node across process scales ranging from
 To account for background network and storage noise inherent to shared production file systems, each experimental configuration was executed 5 independent times. 
 Performance evaluation is based on the \texttt{bandwidth} metric extracted by the IOPS framework, which isolates the synchronous data flushing phase. 
 Overall I/O bandwidth is calculated by dividing the total checkpoint size by the maximum \texttt{time\_write} observed among all participating 
-MPI ranks, ensuring the metric reflects the true bottleneck of the synchronous checkpointing phase. Throughout Section \textbf{[TODO: ref sec:results]}, 
+MPI ranks, ensuring the metric reflects the true bottleneck of the synchronous checkpointing phase. Throughout Section \ref{sec:results}, 
 we report the average bandwidth across the 5 runs to highlight sustained performance trends.
