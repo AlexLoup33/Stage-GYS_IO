@@ -127,19 +127,12 @@ also reaches the metadata servers as a burst of simultaneous file creations.
   \label{fig:fpp_schema}
   \par\medskip
   \begin{minipage}{\textwidth}\raggedright
-  \note{Alexandre: is this the same figure as Figure~\ref{fig:ssf_schema}? Both
-  \texttt{figures/ssf\_background.tex} and \texttt{figures/fpp\_background.tex} draw
-  one file per rank, so the SSF figure currently shows FPP. The SSF one should have
-  every rank writing into a single shared file.}
   \end{minipage}
 \end{figure}
 
 \FloatBarrier
 \paragraph{Subfiling}
 \label{sec:subfiling}
-\note{Alexandre: I moved Subfiling after File Per Process, so the section goes
-from one shared file, to one file per process, and then to subfiling as the
-intermediate case between them.}
 Subfiling acts as an intermediate approach between SSF and File Per Process.
 MPI processes are partitioned into distinct sub-groups. Within each group, an
 assigned process---referred to as an I/O Concentrator~(IOC) or aggregator---collects

@@ -62,7 +62,7 @@ The evaluated resolutions and their corresponding single-checkpoint memory footp
 To systematically explore the performance landscape, we varied both file system layouts and high-level software strategies:
 \begin{itemize}
     \item \textbf{PFS Striping on Plafrim (BeeGFS):} Stripe counts ($N_{OST}$) were evaluated exhaustively from 1 up to the maximum 8 available targets, with stripe sizes ($S_{stripe}$) set up at 512KB.
-    \item \textbf{PFS Striping on Adastra (Lustre):} To capture scalability trends and inflection points, stripe counts were scaled up to 40 OSTs following a non-linear progression. The specific subset of evaluated OST counts, along with stripe sizes ranging from 1~MB to 8~MB, are detailed alongside their respective performance analyses in Section~\ref{sec:results}[TODO: Ajouter référence vers figure OST adastra].
+    \item \textbf{PFS Striping on Adastra (Lustre):} To capture scalability trends and inflection points, stripe counts were scaled up to 40 OSTs following a non-linear progression. The specific subset of evaluated OST counts, along with stripe sizes ranging from 1~MB to 8~MB, are detailed alongside their respective performance analyses in Section~\ref{sec:results}
     \item \textbf{I/O Strategies:} Single Shared File (SSF), File Per Process (FPP), and Subfiling. For Subfiling, the number of subfile ($N_{subfiles}$) was tuned between [TODO: Minimum] and [TODO: maximum].
 \end{itemize}
 
