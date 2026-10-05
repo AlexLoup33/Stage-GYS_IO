@@ -45,21 +45,37 @@ In modern High-Performance Computing~(HPC) systems, Input/Output~(I/O) throughpu
 has become a critical bottleneck for large-scale scientific simulations. As
 computational power scales toward the exascale threshold, storage bandwidth has
 failed to keep pace, creating a widening compute-to-I/O performance gap.
+
+Our work aims to improve the I/O performance of Gysela, a 5D gyrokinetic simulation
+code developed by CEA for nuclear fusion research. Gysela executes across hundreds to
+thousands of nodes over periods of days to weeks, and relies on periodic synchronus 
+checkpointing for fault tolerance and job restartability. A single checkpoint can reach
+terabytes of data, halting computation and putting severe pressure on shared storage. 
+
+We conduct a systematic performance analysis of Gysela's checkpoint writes on Plafrim's and
+Adastra's supercomputer. Using gys\_io, a mini-application that reproduces Gysela's parallel
+5D I/O access patterns, we evaluate the joint impact of Parallel File System (PFS) striping
+parameters (stripe count and stripe size) and three write strategies : Single Shared File (SSF),
+Subfiling and File Per Process (FPP).
+
+\todoitem{Ajouter phrase pour résultats}
+
+%\textsc{Gysela} is a 5D gyrokinetic simulation code developed by CEA for nuclear
+%fusion research. It executes across hundreds to thousands of nodes over periods of
+%days to weeks, and relies on periodic synchronous checkpointing for fault tolerance
+%and job restartability. A single checkpoint operation can generate terabytes of
+%data, halting computation and putting severe pressure on shared storage
+%infrastructure.
  
-\textsc{Gysela} is a 5D gyrokinetic simulation code developed by CEA for nuclear
-fusion research. It executes across hundreds to thousands of nodes over periods of
-days to weeks, and relies on periodic synchronous checkpointing for fault tolerance
-and job restartability. A single checkpoint operation can generate terabytes of
-data, halting computation and putting severe pressure on shared storage
-infrastructure.
- 
-In this work, we conduct a systematic performance analysis of \textsc{Gysela}'s
-checkpointing I/O on the Adastra production supercomputer. Using \texttt{gys\_io},
-a lightweight mini-application that faithfully reproduces \textsc{Gysela}'s
-parallel 5D I/O access patterns, we evaluate the joint impact of Parallel File
-System~(PFS) striping configurations---stripe count and stripe size---and three
-high-level write strategies: Single Shared File~(SSF), Subfiling, and File Per
-Process~(FPP). %Our results show that [TODO: fill in once results are finalized ---
+%In this work, we conduct a systematic performance analysis of \textsc{Gysela}'s
+%checkpointing I/O on the Adastra production supercomputer. Using \texttt{gys\_io},
+%a lightweight mini-application that faithfully reproduces \textsc{Gysela}'s
+%parallel 5D I/O access patterns, we evaluate the joint impact of Parallel File
+%System~(PFS) striping configurations---stripe count and stripe size---and three
+%high-level write strategies: Single Shared File~(SSF), Subfiling, and File Per
+%Process~(FPP). %Our results show that [TODO: fill in once results are finalized
+
+%-----
 % e.g. "$\sim5\times$ improvement scaling OSTs from 1 to 8, optimal subfile count
 % matching physical OST count, FPP achieving superior bandwidth across evaluated
 % scales"]. These findings provide practical tuning guidelines for
