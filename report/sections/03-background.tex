@@ -1,3 +1,4 @@
+% New bib entry needed: wang2018mitigating (Wang et al., HPCC/SmartCity/DSS 2018)
 % ==============================================================================
 \section{Background}
 \label{sec:background}
@@ -7,7 +8,7 @@
 \label{sec:pfs}
 
 Traditional file systems rely on single storage controllers, which creates a severe
-bottleneck when thousands of parallel MPI ranks attempt simultaneous file access.
+bottleneck when thousands of parallel processes attempt simultaneous file access.
 PFS---such as Lustre, BeeGFS, and GPFS---bypass this bottleneck by partitioning 
 files across multiple independent storage devices via data striping.
 
@@ -27,17 +28,17 @@ $N_{\text{OST}}$-fold increase in overall write throughput. However, the actual
 gain depends heavily on the alignment between the stripe configuration and the
 application's access pattern, which motivates the tuning study presented in
 Section~\ref{sec:results}. Figure~\ref{fig:striping} illustrates this process
-for a stripe count of three. \note{Alexandre: I added this figure as an example,
-feel free to adapt or replace it. Ideally it would show the case described just
-above, with $N_{\text{OST}} = 4$ and $S_{\text{stripe}} = 1$~MB.}
+for this example.
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.6\textwidth]{figures/striping.png}
+  % >>> FIGURE STRIPING: put figures/striping.png here <<<
+  \includegraphics[width=0.8\textwidth]{figures/striping.png}
   \caption{Striping in a parallel file system. A file created on a compute node is
            split into fixed-size chunks, which are written in parallel to the storage
-           targets hosted by the storage servers. Here the stripe count is three, so
-           the file is spread over three of the eight available targets.}
+           targets hosted by the storage servers. Here the stripe count is four and
+           the stripe size is 1~MB: each colour is one OST, and the chunks are
+           distributed round-robin.}
   \label{fig:striping}
 \end{figure}
 
@@ -55,31 +56,39 @@ and writing into each of them, which is the approach followed throughout this re
 \subsection{Parallel Write Strategies}
 \label{sec:strategies}
 
-The layout of output files significantly impacts I/O performance. What a write strategy 
-defines is the mapping between the data held in memory by the MPI ranks and the files that 
-end up on the PFS: how many files a checkpoint is made of, which ranks contribute to each of them, 
-and whether those ranks write collectively or independently. That mapping drives the two costs that 
-dominate checkpoint time. Concentrating the output in a few files keeps the metadata load low,
-but forces ranks to share the same file, where concurrent writes to the same regions
+When an application needs to store data, it calls the PFS with a file name. However,
+as seen earlier, the PFS splits the file in blocks and hides other optimizations
+(such as buffers) to improve I/O performance. An application thus has several ways,
+depending on its data and needs, to create files and store this data. What a write
+strategy defines is the mapping between the data held in memory by the processes of the
+parallel application (MPI processes in \textsc{Gysela}) and the files that end up on the PFS: how many files a checkpoint is made of, which processes
+contribute to each of them, and whether those processes write collectively or
+independently. Many such mappings exist; the three strategies considered here, and
+their names, are our own distinction rather than a convention of the domain.
+
+Two quantities matter in such a mapping: the number of files created, and the number
+of processes writing into each of them. Tuning an I/O comes down to a trade-off
+between the two. Concentrating the output in a few files keeps the metadata load low,
+but forces processes to share the same file, where concurrent writes to the same regions
 serialise on file system locks; spreading it over many files removes that contention,
 but multiplies the metadata operations and the number of objects the file system has
-to track. The mapping also interacts with the striping parameters of
+to track. Tuning the I/O therefore consists in first checking that each process
+writes large contiguous blocks, then in choosing the balance between the number of
+files and the number of processes per file. The mapping also interacts with the striping parameters of
 Section~\ref{sec:pfs}: a single shared file only exploits several OSTs if its stripe
-count allows it, whereas with one file per rank the files are spread
+count allows it, whereas with one file per process the files are spread
 over the targets by themselves, on top of whatever striping is applied to each of them. In this work,
-we analyze three high-level I/O strategies, all implemented via the Parallel Data
+we analyze three I/O strategies, all implemented via the Parallel Data
 Interface~(PDI) middleware (described in Section~\ref{sec:tools}), a layer that
-decouples the application from the storage backend: the strategy and its parameters
-are selected in an external configuration file rather than in the source code. All
+decouples the application from the I/O library: the strategy and its parameters
+are selected in an external YAML configuration file rather than in the source code. All
 three strategies therefore exercise the same \texttt{gys\_io} code path and differ
 only in the file layout they produce, which is what makes the comparison in
 Section~\ref{sec:results} a comparison of layouts rather than of implementations.
 
 \paragraph{Single Shared File}
 \label{sec:ssf}
-\note{Alexandre: the three strategies are run-in paragraphs now rather than
-subsubsections.}
-In the Single Shared File~(SSF) approach, all MPI processes concurrently write
+In the Single Shared File~(SSF) approach, all processes concurrently write
 their local data slices into a single unified file on the PFS
 (Figure~\ref{fig:ssf_schema}). Standard libraries such as HDF5 or MPI-IO employ
 two-phase I/O to aggregate non-contiguous memory layouts into large, contiguous
@@ -89,7 +98,9 @@ on storage targets when the number of concurrent writers scales up.
 SSF is also the strategy for which the striping parameters
 matter most: because the whole checkpoint lives in one file, the number of OSTs that
 serve it is exactly its stripe count, so a low stripe count caps the
-achievable bandwidth no matter how many ranks write in parallel.
+achievable bandwidth no matter how many processes write in parallel. The stripe size
+should also be a multiple of the write size of each process, so that a process does not
+write on several OSTs.
 
 \begin{figure}[h]
   \centering
@@ -101,49 +112,44 @@ achievable bandwidth no matter how many ranks write in parallel.
 \FloatBarrier
 \paragraph{File Per Process}
 \label{sec:fpp}
-In the File Per Process~(FPP) approach, every MPI process creates and writes its
+In the File Per Process~(FPP) approach, every process creates and writes its
 own separate file independently (Figure~\ref{fig:fpp_schema}). Because no
 inter-process communication or offset synchronization is required, local write
 throughput can be very high, as each process accesses its file without contention.
-However, FPP generates $N_{\text{ranks}}$ separate files per checkpoint, which can
+However, FPP generates $N_{\text{procs}}$ separate files per checkpoint, which can
 strain metadata servers at scale and complicate downstream post-processing and data
 management. Whether the throughput advantage of FPP outweighs these drawbacks at
 production scale is one of the questions addressed in Section~\ref{sec:results}.
-The parallelism of FPP comes from two sources that combine: the files are spread
-over the available targets, and each file can itself be striped over several OSTs. Which
-of the two dominates depends on how the number of files compares with the number of
-targets. When the ranks far outnumber the OSTs, every target already receives many
-files, so raising the stripe count of an individual file mostly redistributes the same
-load while increasing the number of writers competing for each target; when the files
-are fewer or large enough to span many stripes, striping each of them still contributes.
-The metadata cost is not only the extra entries the file system has to keep for each of 
-these files: because all ranks create their files at the same instant, every checkpoint 
-also reaches the metadata servers as a burst of simultaneous file creations.
+Because all processes create their files at the same instant, every checkpoint reaches
+the metadata servers as a burst of simultaneous file creations, so the number of
+requests the MDS has to handle becomes very large. This is also likely to create
+network contention, although this is not the main topic of this work. Wang et
+al.~\cite{wang2018mitigating} reduce this kind of contention by stalling some processes
+for a random time.
 
 \begin{figure}[htbp]
   \centering
   \input{figures/fpp_background.tex}
   \caption{File Per Process strategy overview.}
   \label{fig:fpp_schema}
-  \par\medskip
-  \begin{minipage}{\textwidth}\raggedright
-  \end{minipage}
 \end{figure}
 
 \FloatBarrier
 \paragraph{Subfiling}
 \label{sec:subfiling}
 Subfiling acts as an intermediate approach between SSF and File Per Process.
-MPI processes are partitioned into distinct sub-groups. Within each group, an
+Processes are partitioned into distinct sub-groups. Within each group, an
 assigned process---referred to as an I/O Concentrator~(IOC) or aggregator---collects
-data from its peer ranks and writes it to a dedicated subfile
-(Figure~\ref{fig:subfiling_schema}). This reduces file system lock contention
+data from its peer processes and writes it to a dedicated subfile
+(Figure~\ref{fig:subfiling_schema}). Like the two-phase I/O used by SSF, this relies
+on aggregating the data of several processes before writing, the difference being that
+each aggregator writes its own file. This reduces file system lock contention
 compared to SSF while avoiding the metadata overload associated with generating one
 file per process. The total number of subfiles ($N_{\text{subfiles}}$) is a tunable
 parameter; its interaction with the physical OST count is one of the central
 questions examined in this study.
 This parameter interpolates between the two previous strategies: with a single
-subfile the scheme degenerates into SSF, and with as many subfiles as ranks it becomes
+subfile the scheme degenerates into SSF, and with as many subfiles as processes it becomes
 FPP, so the useful configurations lie in between, typically one subfile per node or one
 per OST. The aggregation step is what buys the reduction in contention, as each IOC
 gathers the slices of its group and issues fewer, larger and contiguous writes instead
@@ -166,9 +172,10 @@ enable systematic and reproducible evaluation of the I/O strategies described ab
 \texttt{gys\_io} is the application actually executed in the experiments: a
 mini-application that reproduces \textsc{Gysela}'s 5D checkpoint writes without its
 physics, so that a full parameter sweep costs a fraction of a production simulation.
-HDF5 is the format these checkpoints are written in, and the library that performs the
-writes for SSF and Subfiling. PDI sits between the two: it decides, from an external
-configuration file, which strategy and which backend a given run uses, which is what
+HDF5 is the format these checkpoints are written in, and the library that calls the
+PFS and stores the data, for all three strategies. PDI sits between the two: an
+interface that calls I/O libraries such as HDF5. It decides, from an external
+YAML configuration file, which library and which strategy a given run uses, which is what
 makes it possible to compare the three strategies without modifying the application.
 IOPS drives the campaigns themselves, generating the parameter sweeps, submitting the
 jobs to the batch scheduler and collecting the resulting measurements. Each of these
@@ -177,10 +184,11 @@ components is described in more detail below.
 \paragraph{\texttt{gys\_io} Mini-Application}
 \label{sec:gysio}
 \texttt{gys\_io}~\cite{gysela_miniapp_io} is a lightweight benchmark proxy
-developed by CEA that replicates \textsc{Gysela}'s exact 5D domain decomposition
-and checkpoint write calls while skipping all computational physics routines. It
-reads \textsc{Gysela} configuration files directly, which makes it possible to
-reproduce the application's I/O access patterns faithfully across different grid
+developed by CEA outside the main \textsc{Gysela} code base, to focus only on the I/O
+phases (and compression, which we do not study here). It replicates \textsc{Gysela}'s
+5D domain decomposition and checkpoint write calls while skipping all computational
+physics routines. It reads \textsc{Gysela} configuration files directly, which makes
+it possible to reproduce the application's I/O access patterns across different grid
 configurations and process topologies without incurring the cost of full plasma
 simulations. Its small footprint and short execution time make it well-suited for
 large parameter sweeps, which is the primary mode of use in this study.
@@ -192,9 +200,9 @@ by both \textsc{Gysela} and \texttt{gys\_io} for checkpoint files. HDF5 is a
 self-describing binary format designed for storing and organizing large, complex
 datasets in a portable and efficient manner. It provides a high-level API that
 supports parallel I/O through MPI-IO, enabling collective and independent write
-modes. In the context of this study, HDF5 serves as the I/O layer beneath the SSF
-and Subfiling strategies; its collective write mode is particularly important for
-SSF, where all ranks coordinate to produce a single consistent output file. For the
+modes. In the context of this study, HDF5 serves as the I/O layer beneath all three
+strategies; its collective write mode is particularly important for
+SSF, where all processes coordinate to produce a single consistent output file. For the
 FPP strategy, each process produces an independent HDF5 file, which requires
 post-processing to reconstruct the full dataset.
 
@@ -202,13 +210,19 @@ post-processing to reconstruct the full dataset.
 \label{sec:pdi}
 PDI~\cite{roussel2017pdi} is a data interface middleware that decouples application I/O code
 from the underlying storage libraries. Rather than hardcoding I/O calls within the
-application source, \texttt{gys\_io} delegates all data transfers to PDI, which
-dispatches them to the appropriate backend---HDF5 collective writes for SSF,
-HDF5 Subfiling, or independent per-process writes for FPP---according to an
-external YAML configuration file. This design allows switching between strategies
+application source, \texttt{gys\_io} delegates all data transfers to PDI. The I/O is
+described in an external YAML configuration file, which states, for each I/O, the
+backend (the I/O library, here HDF5), the target file, which data is written, and
+where in the file. The target file is what allows us to vary the stripe count, and since
+the description is given per I/O, different libraries can be used for different I/O
+(e.g., checkpointing and post-processing). According to this description, HDF5
+performs collective writes for SSF, subfiling, or independent per-process writes for
+FPP. This design allows switching between strategies
 and tuning their parameters without recompiling the application binary, which is
 essential for conducting systematic benchmark campaigns. PDI thus acts as the
 central control point for all I/O strategy selection in our experiments.
+
+\todoitem{Paragraphe sur TOTO}
 
 \paragraph{IOPS Benchmark Automation Framework}
 \label{sec:iops}
@@ -223,3 +237,5 @@ produces preliminary result reports, providing an immediate first visualization 
 performance trends across the parameter space. This capability significantly reduces
 the manual effort required to analyze large sets of experiments and supports
 iterative refinement of the benchmark campaign.
+
+\todoitem{Paragraphe sur DARSHAN (si utilisé)}

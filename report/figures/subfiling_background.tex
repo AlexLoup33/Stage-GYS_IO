@@ -9,46 +9,37 @@
     sub/.style={rectangle, draw=rouge_inria, fill=rouge_inria!10, ultra thick,
                 minimum width=2.4cm, minimum height=0.6cm, align=center}
 ]
- 
-    % Group 1 ranks
-    \node[mpi] (m0) at (-3.8, 3) {R0};
-    \node[mpi] (m1) at (-2.4, 3) {R1};
-    \node      at   (-1.4, 3)    {$\cdots$};
- 
-    % Group 2 ranks
-    \node[mpi] (m2) at ( 0.4, 3) {R2};
-    \node[mpi] (m3) at ( 1.8, 3) {R3};
-    \node      at   ( 2.9, 3)    {$\cdots$};
- 
-    \node[anchor=west, text=blue!80!black, font=\bfseries] at (3.8, 3) {Compute Nodes};
- 
-    % Group separating dashed line
-    \draw[dashed, gray!60, thick] (-0.7, 3.5) -- (-0.7, -1.2);
- 
-    % IOC nodes
-    \node[ioc] (ioc1) at (-2.4, 1.2) {\textbf{IOC 1}};
-    \node[ioc] (ioc2) at ( 1.8, 1.2) {\textbf{IOC 2}};
-    \node[anchor=west, text=teal!80!black, font=\bfseries] at (3.8, 1.2)
+% Group 1 processes
+\node[mpi] (m0) at (-3.8, 3) {P0};
+\node[mpi] (m1) at (-2.4, 3) {P1};
+\node      at   (-1.4, 3)    {$\cdots$};
+% Group 2 processes
+\node[mpi] (m2) at ( 0.4, 3) {P2};
+\node[mpi] (m3) at ( 1.8, 3) {P3};
+\node      at   ( 2.9, 3)    {$\cdots$};
+\node[anchor=west, text=blue!80!black, font=\bfseries] at (3.8, 3) {Compute Nodes};
+% Group separating dashed line
+\draw[dashed, gray!60, thick] (-0.7, 3.5) -- (-0.7, -1.2);
+% IOC nodes
+\node[ioc] (ioc1) at (-2.4, 1.2) {\textbf{IOC 1}};
+\node[ioc] (ioc2) at ( 1.8, 1.2) {\textbf{IOC 2}};
+\node[anchor=west, text=teal!80!black, font=\bfseries] at (3.8, 1.2)
         {Aggregators (IOC)};
- 
-    % Arrows Ranks -> IOC
-    \draw[->, >=stealth, thick, blue!70!black] (m0.south) -- (ioc1.north west);
-    \draw[->, >=stealth, thick, blue!70!black] (m1.south) -- (ioc1.north);
-    \draw[->, >=stealth, thick, blue!70!black] (m2.south) -- (ioc2.north);
-    \draw[->, >=stealth, thick, blue!70!black] (m3.south) -- (ioc2.north east);
- 
-    % Subfiles
-    \node[sub] (f1) at (-2.4, -0.6) {\textbf{Subfile 1}};
-    \node[sub] (f2) at ( 1.8, -0.6) {\textbf{Subfile 2}};
-    \node[anchor=west, text=rouge_inria, font=\bfseries] at (3.8, -0.6)
+% Arrows processes -> IOC
+\draw[->, >=stealth, thick, blue!70!black] (m0.south) -- (ioc1.north west);
+\draw[->, >=stealth, thick, blue!70!black] (m1.south) -- (ioc1.north);
+\draw[->, >=stealth, thick, blue!70!black] (m2.south) -- (ioc2.north);
+\draw[->, >=stealth, thick, blue!70!black] (m3.south) -- (ioc2.north east);
+% Subfiles
+\node[sub] (f1) at (-2.4, -0.6) {\textbf{Subfile 1}};
+\node[sub] (f2) at ( 1.8, -0.6) {\textbf{Subfile 2}};
+\node[anchor=west, text=rouge_inria, font=\bfseries] at (3.8, -0.6)
         {Files on PFS};
- 
-    % Arrows IOC -> Subfiles
-    \draw[->, >=stealth, line width=1.5pt, teal!80!black]
+% Arrows IOC -> subfiles
+\draw[->, >=stealth, line width=1.5pt, teal!80!black]
         (ioc1.south) -- (f1.north)
         node[midway, left, scale=0.8, text=black] {stripe write};
-    \draw[->, >=stealth, line width=1.5pt, teal!80!black]
+\draw[->, >=stealth, line width=1.5pt, teal!80!black]
         (ioc2.south) -- (f2.north)
         node[midway, left, scale=0.8, text=black] {stripe write};
- 
 \end{tikzpicture}
