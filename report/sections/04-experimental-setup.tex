@@ -3,74 +3,116 @@
 \label{sec:setup}
 % ==============================================================================
 
-To evaluate the performance and scalability of our parallel I/O strategies, we conducted experiments 
-across two distinct High-Performance Computing (HPC) clusters: a regional cluster used for initial setup 
-and prototyping, and a national supercomputer used for larger-scale runs.
+To evaluate the performance and scalability of our parallel I/O strategies, we conducted
+experiments on two distinct High-Performance Computing (HPC) clusters: Adastra, a national
+supercomputer on which all main results are obtained, and Plafrim, a regional cluster used at a
+smaller scale to validate the methodology and to check whether the observed trends hold on a
+different parallel file system.
 
 \subsection{Target Platforms and Storage Infrastructure}
+\label{sec:platforms}
 
 \subsubsection{Prototyping Environment: Plafrim}
-The first phase of our experiments took place on the Plafrim~\cite{plafrim_inria} cluster at Inria Bordeaux. Benchmarks were 
-deployed on the \textit{Bora} compute nodes, which are equipped with dual-socket Intel Xeon Gold 6240 processors 
-(36 physical cores per node at 2.60~GHz) and 192~GB of RAM per node. Inter-node communications relied 
-on an Intel Omni-Path network delivering 100~Gb/s bandwidth. Storage on Plafrim is managed by a BeeGFS~\cite{chowdhury2019characterization}
-parallel file system offering an aggregate bandwidth capped at 10~Gbit/s and configured with up to 8 active Object 
-Storage Targets (OSTs). 
+\label{sec:plafrim}
+
+The first phase of our experiments took place on the Plafrim~\cite{plafrim_inria} cluster at
+Inria Bordeaux. Benchmarks were deployed on the Bora compute nodes, which are equipped with
+dual-socket Intel Xeon Gold 6240 processors (36 physical cores per node at 2.60~GHz) and 192~GB of
+RAM per node. Inter-node communications rely on an Intel Omni-Path network delivering 100~Gb/s.
+Storage on Plafrim is managed by a BeeGFS~\cite{chowdhury2019characterization} parallel file system
+configured with up to 8 active Object Storage Targets (OSTs).
+\textbf{[TODO: the ``10~Gbit/s aggregate bandwidth cap'' of the previous version is below some of
+our measurements (about 16~GiB/s); remove it or replace it by the peak measured with IOR.]}
 
 \subsubsection{Production Environment: Adastra}
-To evaluate our strategies at a larger scale, we extended our benchmark campaign to the Adastra~\cite{adastra_cines} supercomputer at CINES. 
-Specifically, tests were run on the GENOA CPU partition, which features dual-socket AMD EPYC 9654 processors (192 physical 
-cores per node and high memory throughput). Nodes are connected via an HPE Slingshot-11 high-speed network. Storage on Adastra 
-is provided by a production-grade Lustre parallel file system, which allows fine-grained data striping across up to 40 active OSTs.
+\label{sec:adastra}
+
+To evaluate our strategies at a larger scale, we extended our benchmark campaign to the
+Adastra~\cite{adastra_cines} supercomputer at CINES. Tests were run on the GENOA CPU partition,
+which features dual-socket AMD EPYC 9654 processors (192 physical cores per node and high memory
+throughput). Nodes are connected by an HPE Slingshot-11 high-speed network. Adastra provides two
+Lustre file systems, both based on ClusterStor E1000 SSD storage: Home, with a capacity of
+125~TiB and a bandwidth of 77~GiB/s in read and 34~GiB/s in write, and Scratch, with a capacity of
+1.89~PiB and a bandwidth of 1086~GiB/s in read and 786~GiB/s in write. All checkpoints in this
+work are written on Scratch, which is the file system used by production runs. Scratch is
+composed of 64 OSTs, which allows fine-grained data striping up to a stripe count of 64.
+\textbf{[TODO: confirm the number of OSTs (\texttt{lfs df}) and the maximum stripe count allowed to
+users.]}
+These figures are theoretical peaks of the whole file system; the reference used to normalize our
+results is the peak we measure ourselves with IOR (Section~\ref{sec:methodology}).
 
 \subsection{Software Stack and Reproducibility}
+\label{sec:repro}
 
-Ensuring reproducible I/O measurements requires strict control over the software environment. On both platforms, the benchmark applications 
-and I/O middleware were compiled using \textbf{GCC 13.2.1} \& \textbf{OpenMPI [TODO: version of OpenMPI]}. The I/O 
-stack relies on PDI version \textbf{1.11.0} and HDF5 version \textbf{[TODO: version of HDF5]}, with parallel 
-I/O (MPI-IO) and \texttt{H5FD\_SUBFILING} explicitly enabled. 
-\note{Alexandre: add the version you used for all the tools. For PDI, you can
-refer to the commit you used in your tests. Remember the idea is to make the results
-reproducible.}
+Ensuring reproducible I/O measurements requires strict control over the software environment.
+On both platforms, the benchmark applications and I/O middleware were compiled using GCC 13.2.1 \&
+OpenMPI \textbf{[TODO: version of OpenMPI]}. The I/O stack relies on PDI version 1.11.0
+\textbf{[TODO: commit]} and HDF5 version \textbf{[TODO: version of HDF5]}, with parallel I/O
+(MPI-IO) and \texttt{H5FD\_SUBFILING} explicitly enabled. \texttt{gys\_io}, IOPS and Lustre are used
+in versions \textbf{[TODO: gys\_io commit, IOPS version, Lustre version]}.
 
-To mitigate NUMA effects and ensure consistent execution, MPI processes were pinned to physical cores using \texttt{--bind-to core=1}. For the 
-Subfiling strategy, the I/O Concentrators were allocated and distributed with a strict mapping of one aggregator per compute node, thereby distributing 
-the aggregation workload evenly across the allocated infrastructure and avoiding intra-node bottlenecks.
+To mitigate NUMA effects and ensure consistent execution, processes were pinned to physical cores
+using \texttt{--bind-to core}. For the Subfiling strategy, the I/O Concentrators were allocated and
+distributed with a strict mapping of one aggregator per compute node, thereby distributing the
+aggregation workload evenly across the allocated infrastructure and avoiding intra-node
+bottlenecks. As a consequence, the number of subfiles cannot exceed the number of nodes.
 
 \subsection{Application Workloads and Grid Configurations}
+\label{sec:workloads}
 
-The experiments considered several 5D grid configurations representative of different Gysela workloads. 
-The evaluated resolutions and their corresponding single-checkpoint memory footprints are summarized below:
+The experiments considered three 5D grid configurations representative of different
+\textsc{Gysela} workloads, from a small to a production-scale checkpoint. The resolutions and the
+size of the corresponding checkpoint are summarized in Table~\ref{tab:configs}. C2 corresponds to
+the order of magnitude of a production checkpoint (about 2~TB, Section~\ref{sec:intro}).
 
-\begin{align*}
-    C_1 &: N_r \times N_\theta \times N_\varphi \times N_{v_\parallel} \times N_\mu
-        = 128 \times 128 \times 64 \times 64 \times 64 \\
-    C_2 &: N_r \times N_\theta \times N_\varphi \times N_{v_\parallel} \times N_\mu
-        = 256 \times 512 \times 128 \times 128 \times 64 \\
-    C_3 &: N_r \times N_\theta \times N_\varphi \times N_{v_\parallel} \times N_\mu
-        = 512 \times 1024 \times 64 \times 128 \times 64
-\end{align*}
-
-%These configurations result in single-checkpoint memory footprints ranging from approximately 64~GB to 
-%\textbf{[TODO: insérer taille de C3]}~GB. In the gys\_io proxy application, the 5D domain is mapped to a 
-%Cartesian MPI topology. Specifically, the parallelization is applied across the \textbf{[TODO: ex: $r, \theta,$ and $\varphi$]} 
-%dimensions, while the \textbf{[TODO: ex: $v_\parallel$ and $\mu$]} dimensions remain local to each MPI rank. This access pattern 
-%dictates the granularity of the I/O requests issued by each process.
+\begin{table}[h]
+  \centering
+  \caption{Grid configurations and size of one checkpoint, measured on the output directory.}
+  \label{tab:configs}
+  \begin{tabular}{llr}
+    \hline
+    Config & $N_r \times N_\theta \times N_\varphi \times N_{v_\parallel} \times N_\mu$ & Checkpoint size \\
+    \hline
+    C1 & $128 \times 128 \times 64 \times 64 \times 64$ & 66~GiB \\
+    C2 & $256 \times 512 \times 128 \times 128 \times 64$ & $\approx$ 2.1~TiB \\
+    C3 & $512 \times 1024 \times 64 \times 128 \times 64$ & \textbf{[TODO: measured]} \\
+    \hline
+  \end{tabular}
+\end{table}
 
 \subsection{Evaluation Methodology and Metrics}
+\label{sec:methodology}
 
-To systematically explore the performance landscape, we varied both file system layouts and high-level software strategies:
+To systematically explore the performance landscape, we varied both file system layouts and
+write strategies:
 \begin{itemize}
-    \item \textbf{PFS Striping on Plafrim (BeeGFS):} Stripe counts ($N_{OST}$) were evaluated exhaustively from 1 up to the maximum 8 available targets, with stripe sizes ($S_{stripe}$) set up at 512KB.
-    \item \textbf{PFS Striping on Adastra (Lustre):} To capture scalability trends and inflection points, stripe counts were scaled up to 40 OSTs following a non-linear progression. The specific subset of evaluated OST counts, along with stripe sizes ranging from 1~MB to 8~MB, are detailed alongside their respective performance analyses in Section~\ref{sec:results}
-    \item \textbf{I/O Strategies:} Single Shared File (SSF), File Per Process (FPP), and Subfiling. For Subfiling, the number of subfile ($N_{subfiles}$) was tuned between [TODO: Minimum] and [TODO: maximum].
+  \item \textbf{PFS striping on Plafrim (BeeGFS):} stripe counts ($N_{\text{OST}}$) were evaluated
+        from 1 up to the maximum of 8 available targets, with a stripe size ($S_{\text{stripe}}$)
+        of 512~KB.
+  \item \textbf{PFS striping on Adastra (Lustre):} to capture scalability trends and inflection
+        points, stripe counts were scaled up to 64 OSTs, with $N_{\text{OST}} \in \{1, 2, 4, 8, 16,
+        32, 40, 64\}$. The stripe size is first fixed to 8~MB, then varied from
+        \textbf{[TODO: range, e.g. 1 to 16~MB]} in a dedicated study (Section~\ref{sec:results}).
+  \item \textbf{Write strategies:} Single Shared File (SSF), File Per Process (FPP), and Subfiling.
+        For Subfiling, the number of subfiles ($N_{\text{subfiles}}$) was tuned between 1 and
+        \textbf{[TODO: maximum, e.g. 128]}, with one subfile per aggregator.
 \end{itemize}
 
-All benchmarks were submitted in exclusive node allocation mode via Slurm. To maintain a constant density and mitigate intra-node 
-contention, we allocated 8 MPI tasks per node across process scales ranging from 16 MPI ranks (2 nodes) up to 2048 MPI ranks (256 nodes). 
+All benchmarks were submitted in exclusive node allocation mode via Slurm. To maintain a constant
+density and mitigate intra-node contention, we allocated 8 processes per node across process
+scales ranging from \textbf{[TODO: 16 processes (2 nodes)]} up to \textbf{[TODO: 2048 processes
+(256 nodes)]}.
 
-To account for background network and storage noise inherent to shared production file systems, each experimental configuration was executed 5 independent times. 
-Performance evaluation is based on the \texttt{bandwidth} metric extracted by the IOPS framework, which isolates the synchronous data flushing phase. 
-Overall I/O bandwidth is calculated by dividing the total checkpoint size by the maximum \texttt{time\_write} observed among all participating 
-MPI ranks, ensuring the metric reflects the true bottleneck of the synchronous checkpointing phase. Throughout Section \ref{sec:results}, 
-we report the average bandwidth across the 5 runs to highlight sustained performance trends.
+To account for background network and storage noise inherent to shared production file systems,
+each experimental configuration was executed 5 independent times, and the output directory was
+emptied before each run so that the measured size is exactly that of one checkpoint.
+\textbf{[TODO: say how run order is handled (randomized or interleaved) if applicable.]}
+
+Since the checkpoint is a blocking operation in \textsc{Gysela}, the relevant duration is the time
+up to the completion of the global write operation across all processes, denoted $t_{\text{write}}$
+(\texttt{time\_write}). The performance metric extracted by the IOPS framework is the write
+bandwidth, defined as the total size of the output files, in GiB, divided by $t_{\text{write}}$.
+\textbf{[TODO: confirm that $t_{\text{write}}$ is the maximum over all processes and that it
+includes closing the files.]} Bandwidths are reported in GiB/s, and compared with the peak measured
+with IOR on the same number of OSTs. Throughout Section~\ref{sec:results}, we report the mean
+bandwidth across the 5 runs, with the standard deviation as error bars.
